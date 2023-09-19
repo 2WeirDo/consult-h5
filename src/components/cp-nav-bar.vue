@@ -15,7 +15,11 @@ const onClickLeft = () => {
     router.push('/')
   }
 }
-// 接收父传子变量
+// bug:
+// “透传 attribute”指的是传递给一个组件，却没有被该组件声明为 props 或 emits 的 attribute 或者 v-on 事件监听器
+// 当不接收父组件传递过来的变量时, 当这个子组件以单个元素为根作渲染时，透传的 attribute 会自动被添加到根元素上
+// 而这个地方正好我们的根元素有title属性和rightText属性, 因此就覆盖掉 (如果我们的van-nav-bar外面包裹一个div就不会透传属性了)
+// 但对实际开发没啥影响, 因为我们还是会按照要求传递
 defineProps<{
   title?: string
   rightText?: string
