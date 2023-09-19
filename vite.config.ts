@@ -14,7 +14,7 @@ export default defineConfig({
       reactivityTransform: true // 允许对父传子props解构时保留响应式
     }),
     Components({
-      resolvers: [VantResolver()], // vant按需引入
+      resolvers: [VantResolver()], // vant按需引入 => 项目下scr/components中的组件也会被自动全局注册, 因此不用导入
       dts: false // 关闭自动生成类型声明文件(不需要了, 已经有了)
     })
   ],
