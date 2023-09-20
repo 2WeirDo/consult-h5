@@ -2,6 +2,7 @@ import { useUserStore } from '@/stores'
 import router from '@/router'
 import axios from 'axios'
 import { showFailToast } from 'vant'
+import 'vant/es/toast/style'
 
 // 1. 新axios实例，基础配置
 const baseURL = 'https://consult-api.itheima.net/'

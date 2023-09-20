@@ -1,8 +1,22 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { mobileRules, passwordRules } from '@/utils/rules'
+// 引入toast
+import { showFailToast } from 'vant'
+import 'vant/es/toast/style'
 const agree = ref(false)
-// 1.动态切换密码框眼睛图标 => 控制是否显示密码
+// 动态切换密码框眼睛图标 => 控制是否显示密码
 const isShowPass = ref(false)
+
+// 表单数据
+const mobile = ref('')
+const password = ref('')
+
+// 表单提交
+const login = () => {
+  if (!agree.value) showFailToast('请勾选已同意')
+  // 验证完毕，进行登录
+}
 </script>
 
 <template>
@@ -17,9 +31,20 @@ const isShowPass = ref(false)
       </a>
     </div>
     <!-- == form 表单 == -->
-    <van-form autocomplete="off">
-      <van-field placeholder="请输入手机号" type="tel"></van-field>
-      <van-field placeholder="请输入密码" :type="isShowPass ? 'text' : 'password'">
+    <!-- 通过@submit提交表单 -->
+    <van-form autocomplete="off" @submit="login">
+      <van-field
+        placeholder="请输入手机号"
+        type="tel"
+        v-model="mobile"
+        :rules="mobileRules"
+      ></van-field>
+      <van-field
+        placeholder="请输入密码"
+        v-model="password"
+        :type="isShowPass ? 'text' : 'password'"
+        :rules="passwordRules"
+      >
         <template #button>
           <cp-icon
             @click="isShowPass = !isShowPass"
@@ -36,7 +61,8 @@ const isShowPass = ref(false)
         </van-checkbox>
       </div>
       <div class="cp-cell">
-        <van-button block round type="primary">登 录</van-button>
+        <!-- 通过native-type="submit"设置为提交按钮 -->
+        <van-button block round type="primary" native-type="submit">登 录</van-button>
       </div>
       <div class="cp-cell">
         <a href="javascript:;">忘记密码？</a>
