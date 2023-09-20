@@ -10,6 +10,8 @@
       <van-tabbar-item to="/home">
         首页
         <template #icon="{ active }">
+          <!-- 通过vant提供的作用域插槽动态绑定图标 -->
+          <!-- 这是vant官方用法 => 通过作用域插槽拿到一个bool值active(这里解构出的, 原本应该拿prop.active): 值为true即为选中, false为未选中 -->
           <cp-icon :name="`home-index-${active ? 'active' : 'default'}`" />
         </template>
       </van-tabbar-item>
@@ -37,6 +39,7 @@
 
 <style lang="scss" scoped>
 .layout-page {
+  // 样式穿透
   ::v-deep() {
     .van-tabbar-item {
       &__icon {
