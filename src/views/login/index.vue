@@ -13,6 +13,7 @@ import { loginByMobile } from '@/api/user'
 import { useUserStore } from '@/stores'
 import { useRoute, useRouter } from 'vue-router'
 
+// 什么时候对变量要传递类型呢?  一般基础数据类型不用加类型, 因为可以自己判断, 复杂数据推荐使用断言 as
 const code = ref('')
 const agree = ref(false)
 // 动态切换密码框眼睛图标 => 控制是否显示密码
@@ -52,22 +53,28 @@ const send = async () => {
   // 已经倒计时time的值大于0，60s内不能重复发送验证码
   if (time.value > 0) return
   // 验证不通过报错，阻止程序继续执行
-  // validate通过传入name验证mobile表单
-  await form.value?.validate('mobile')
-  const res = await sendMobileCode(mobile.value, 'login')
-  showSuccessToast('发送成功~~')
-  showNotify({ type: 'success', message: `验证码为${res.code}` })
-  time.value = 60
-  // 倒计时
-  timeId = window.setInterval(() => {
-    time.value--
-    if (time.value <= 0) window.clearInterval(timeId)
-  }, 1000)
+  // validate通过传入name验证mobile表单(这里为手机号格式是否正确)
+  try {
+    await form.value?.validate('mobile')
+    const res = await sendMobileCode(mobile.value, 'login')
+    showSuccessToast('发送成功~~')
+    showNotify({ type: 'success', message: `验证码为${res.code}` })
+    code.value = res.code
+    time.value = 60
+    // 倒计时
+    timeId = window.setInterval(() => {
+      time.value--
+      if (time.value <= 0) window.clearInterval(timeId)
+    }, 1000)
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 // 组件卸载关闭定时器
 // 定时器相关函数是 window 去调用
 onUnmounted(() => {
+  // 避免内存泄漏
   window.clearInterval(timeId)
 })
 </script>
@@ -85,7 +92,7 @@ onUnmounted(() => {
     </div>
     <!-- == form 表单 == -->
     <!-- 通过@submit提交表单 -->
-    <van-form autocomplete="off" @submit="login">
+    <van-form autocomplete="off" @submit="login" ref="form">
       <van-field
         placeholder="请输入手机号"
         type="tel"
@@ -110,7 +117,7 @@ onUnmounted(() => {
 
       <van-field v-else placeholder="短信验证码" :rules="codeRules" v-model="code">
         <template #button>
-          <span @click="send" :class="{ active: time > 0 }" class="normal">{{
+          <span @click="send" :class="{ active: time > 0 }">{{
             time > 0 ? `${time}s后再次发送` : '发送验证码'
           }}</span>
         </template>
@@ -156,10 +163,7 @@ onUnmounted(() => {
     .active {
       color: palevioletred;
     }
-    .normal {
-      color: black;
-      text-decoration: underline;
-    }
+
     .cp-cell {
       height: 52px;
       padding: 14px 16px;

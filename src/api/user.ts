@@ -1,6 +1,7 @@
 import type { User, CodeType } from '@/types/user'
 import { request } from '@/utils/request'
 
+// 说明 : 通过request.method<指定data数据类型>
 // 密码登录
 export const loginByPassword = (mobile: string, password: string) => {
   // User是定义返回数据的类型
