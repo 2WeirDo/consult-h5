@@ -2,20 +2,36 @@
 import { ref } from 'vue'
 import { mobileRules, passwordRules } from '@/utils/rules'
 // 引入toast
-import { showFailToast } from 'vant'
+import { showFailToast, showSuccessToast } from 'vant'
 import 'vant/es/toast/style'
+
+import { loginByPassword } from '@/api/user'
+import { useUserStore } from '@/stores'
+import { useRoute, useRouter } from 'vue-router'
+
 const agree = ref(false)
 // 动态切换密码框眼睛图标 => 控制是否显示密码
 const isShowPass = ref(false)
 
 // 表单数据
-const mobile = ref('')
-const password = ref('')
+const mobile = ref('13230000024')
+const password = ref('abc12345')
 
 // 表单提交
-const login = () => {
+const store = useUserStore()
+const router = useRouter()
+const route = useRoute()
+const login = async () => {
   if (!agree.value) showFailToast('请勾选已同意')
-  // 验证完毕，进行登录
+  else {
+    // 验证完毕，进行登录
+    const res = await loginByPassword(mobile.value, password.value)
+    store.setUser(res)
+    // 如果有回跳地址就进行回跳，没有跳转到个人中心
+    // 这个路由对象上如果有问号参数需要通过query拿到, 这里通过断言给转换为字符串
+    router.push((route.query.returnUrl as string) || '/user')
+    showSuccessToast('登录成功')
+  }
 }
 </script>
 
