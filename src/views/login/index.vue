@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 const agree = ref(false)
+// 1.动态切换密码框眼睛图标 => 控制是否显示密码
+const isShowPass = ref(false)
 </script>
 
 <template>
@@ -17,7 +19,14 @@ const agree = ref(false)
     <!-- == form 表单 == -->
     <van-form autocomplete="off">
       <van-field placeholder="请输入手机号" type="tel"></van-field>
-      <van-field placeholder="请输入密码" type="password"></van-field>
+      <van-field placeholder="请输入密码" :type="isShowPass ? 'text' : 'password'">
+        <template #button>
+          <cp-icon
+            @click="isShowPass = !isShowPass"
+            :name="`login-eye-${isShowPass ? 'on' : 'off'}`"
+          ></cp-icon>
+        </template>
+      </van-field>
       <div class="cp-cell">
         <van-checkbox v-model="agree">
           <span>我已同意</span>
