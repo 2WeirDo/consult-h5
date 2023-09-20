@@ -35,6 +35,7 @@ const router = createRouter({
 })
 
 // 访问权限控制
+// 少提交了一次
 router.beforeEach((to, from) => {
   // 用户仓库
   const store = useUserStore()
