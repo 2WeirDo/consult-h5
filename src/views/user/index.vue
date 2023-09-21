@@ -225,6 +225,8 @@ const logout = async () => {
     background-color: rgb(230, 230, 230);
     margin: 20px auto;
     width: 100px;
+    padding-top: 8px;
+    height: 30px;
     box-shadow: 1px 1px 1px black;
     text-align: center;
     color: black;

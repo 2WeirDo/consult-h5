@@ -4,6 +4,12 @@ import { useRouter } from 'vue-router'
 // 1. 已有的功能：返回图标，返回效果，固定定位（组件内部实现）
 const router = useRouter()
 const onClickLeft = () => {
+  // 扩展 back 属性，如果有就执行 back 对应的函数。
+  // 自定义返回的逻辑
+  if (props.back) {
+    return props.back()
+    // 执行这个函数并return阻止代码往下走
+  }
   // 判断历史记录中是否有回退
   // 补充: 当我们使用router.replace跳转是不能返回页面的
   if (history.state?.back) {
@@ -20,9 +26,10 @@ const onClickLeft = () => {
 // 当不接收父组件传递过来的变量时, 当这个子组件以单个元素为根作渲染时，透传的 attribute 会自动被添加到根元素上
 // 而这个地方正好我们的根元素有title属性和rightText属性, 因此就覆盖掉 (如果我们的van-nav-bar外面包裹一个div就不会透传属性了)
 // 但对实际开发没啥影响, 因为我们还是会按照要求传递
-defineProps<{
+const props = defineProps<{
   title?: string
   rightText?: string
+  back?: () => void // 接收一个back函数, 自定义返回的逻辑
 }>()
 
 // 子传父

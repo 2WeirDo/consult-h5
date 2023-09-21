@@ -11,8 +11,15 @@ const loadList = async () => {
   const res = await getPatientList()
   list.value = res
 }
+
+// 2. 新增患者功能
+// 控制新增患者弹层显隐
+const show = ref(false)
+const showPopup = () => {
+  show.value = true
+}
+
 onMounted(() => {
-  // showNotify('后端接口出现问题')
   loadList()
 })
 </script>
@@ -44,7 +51,7 @@ onMounted(() => {
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
       <!-- 限制患者数量 -->
-      <div class="patient-add" v-if="list.length < 6">
+      <div class="patient-add" v-if="list.length < 6" @click="showPopup">
         <cp-icon name="user-add" />
         <p>添加患者</p>
       </div>
@@ -54,6 +61,14 @@ onMounted(() => {
     <div class="patient-next" v-if="false">
       <van-button type="primary" round block>下一步</van-button>
     </div>
+
+    <!-- 新增患者弹层 -->
+    <van-popup v-model:show="show" position="top">
+      <!-- 点击返回就关闭弹层 -->
+      <cp-nav-bar title="添加患者" right-text="保存" :back="() => (show = false)"></cp-nav-bar>
+      <div>1111</div>
+      <!-- 表单 -->
+    </van-popup>
   </div>
 </template>
 
@@ -61,6 +76,13 @@ onMounted(() => {
 .patient-page {
   padding: 46px 0 80px;
 }
+::v-deep .van-popup {
+  width: 100%;
+  height: 100%;
+  padding-top: 46px;
+  box-sizing: border-box;
+}
+
 .patient-change {
   padding: 15px;
   > h3 {
