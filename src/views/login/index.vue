@@ -4,8 +4,6 @@ import { mobileRules, passwordRules, codeRules } from '@/utils/rules'
 
 // 引入toast, Notify
 import { showFailToast, showSuccessToast, showNotify, type FormInstance } from 'vant'
-import 'vant/es/notify/style'
-import 'vant/es/toast/style'
 
 import { loginByPassword } from '@/api/user'
 import { sendMobileCode } from '@/api/user'
@@ -23,7 +21,7 @@ const isShowPass = ref(false)
 const isPass = ref(true)
 
 // 表单数据
-const mobile = ref('13230000024')
+const mobile = ref('13230000088')
 const password = ref('abc12345')
 
 // 表单提交

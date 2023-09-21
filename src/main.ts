@@ -9,6 +9,11 @@ import '@/styles/main.scss'
 // 注册svg图标
 import 'virtual:svg-icons-register'
 
+// 引入vant反馈组件样式
+import 'vant/es/dialog/style'
+import 'vant/es/notify/style'
+import 'vant/es/toast/style'
+
 const app = createApp(App)
 
 app.use(pinia)

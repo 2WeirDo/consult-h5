@@ -22,7 +22,7 @@ const tools = [
 ]
 
 // 实现退出功能
-import 'vant/es/dialog/style'
+
 import { showConfirmDialog, showSuccessToast } from 'vant'
 import { useUserStore } from '@/stores/index'
 const store = useUserStore()
