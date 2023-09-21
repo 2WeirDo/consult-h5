@@ -9,6 +9,16 @@ onMounted(async () => {
   const res = await getUserInfo()
   user.value = res
 })
+
+const tools = [
+  { label: '我的问诊', path: '/user/consult' },
+  { label: '我的处方', path: '/' },
+  { label: '家庭档案', path: '/user/patient' },
+  { label: '地址管理', path: '/user/address' },
+  { label: '我的评价', path: '/' },
+  { label: '官方客服', path: '/' },
+  { label: '设置', path: '/' }
+]
 </script>
 
 <template>
@@ -55,7 +65,7 @@ onMounted(async () => {
           <p>待付款</p>
         </van-col>
         <van-col span="6">
-          <van-badge :content="user.orderInfo?.shippedNumber || ''">
+          <van-badge dot color="#1989fa" :content="user.orderInfo?.shippedNumber || ''">
             <cp-icon name="user-shipped" />
           </van-badge>
           <p>待发货</p>
@@ -77,11 +87,15 @@ onMounted(async () => {
     <!-- 2. 快捷工具 -->
     <div class="user-page-group">
       <h3>快捷工具</h3>
-      <van-cell title="标题" is-link :border="false">
-        <template #icon><cp-icon name="user-tool-01" /></template>
-      </van-cell>
-      <van-cell title="标题" is-link :border="false">
-        <template #icon><cp-icon name="user-tool-01" /></template>
+      <van-cell
+        :title="item.label"
+        is-link
+        :to="item.path"
+        :border="false"
+        v-for="(item, index) in tools"
+        :key="index"
+      >
+        <template #icon><cp-icon :name="`user-tool-0${index + 1}`" /></template>
       </van-cell>
     </div>
     <!-- 3. 退出登录 -->
