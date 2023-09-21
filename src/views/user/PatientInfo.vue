@@ -30,17 +30,20 @@ onMounted(() => {
       <div class="patient-item">
         <div class="info">
           <span class="name">{{ item.name }}</span>
-          <!-- 说明❓：身份证脱敏处理：/^(.{6})(?:\d+)(.{4})$/，显示前6和后4，出生日期隐藏
-            匹配第一个$1 ^(.{6})
-            ?: 不作为匹配结果存储
-            匹配第二个$2 (.{4})$ -->
-          <span class="id">{{ item.idCard.replace(/^(.{6})(?:\d+)(.{4})$/, '\$1******\$2') }}</span>
+          <!-- 说明❓：身份证脱敏处理：/^(.{6})(?:\d+)(.{4})$/，显示前6位和后4位，出生日期隐藏
+            前六位 => ^(.{6}) => 匹配第一个$1 
+            后四位 => (.{4})$ => 匹配第二个$2
+           ?:在正则表达式中是一个非捕获组 , 表示要替换显示的部分, 但是实际不替换 => 不作为匹配结果存储
+           注意 : 正则别加引号, 正则就是一个对象
+          -->
+          <span class="id">{{ item.idCard.replace(/^(.{6})(?:\d+)(.{4})$/, '\$1*****\$2') }}</span>
           <span>{{ item.genderValue }}</span>
           <span>{{ item.age }}岁</span>
         </div>
         <div class="icon"><cp-icon name="user-edit" /></div>
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
+      <!-- 限制患者数量 -->
       <div class="patient-add" v-if="list.length < 6">
         <cp-icon name="user-add" />
         <p>添加患者</p>
