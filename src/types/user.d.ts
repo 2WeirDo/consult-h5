@@ -11,3 +11,21 @@ export type User = {
 
 // 短信验证码类型(字面量类型)
 export type CodeType = 'login' | 'register'
+
+// Pick 可以从一个对象类型中 取出某些属性
+// Omit 可以从一个对象类型中 排出某些属性
+type OmitUser = Omit<User, 'token'>
+
+// 个人信息-交叉类型
+export type UserInfo = OmitUser & {
+  likeNumber: number
+  collectionNumber: number
+  score: number
+  couponNumber: number
+  orderInfo: {
+    paidNumber: number
+    receivedNumber: number
+    shippedNumber: number
+    finishedNumber: number
+  }
+}
