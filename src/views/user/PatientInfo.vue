@@ -19,6 +19,15 @@ const showPopup = () => {
   show.value = true
 }
 
+// 弹层内容展示
+const options = [
+  // 跟后端返回数据有关, 男代表1
+  { label: '男', value: 1 },
+  { label: '女', value: 0 }
+]
+// 存储选中的性别value值
+const gender = ref(0)
+
 onMounted(() => {
   loadList()
 })
@@ -33,8 +42,8 @@ onMounted(() => {
       <p>以便医生给出更准确的治疗，信息仅医生可见</p>
     </div>
     <!-- 患者列表 -->
-    <div class="patient-list" v-for="item in list" :key="item.id">
-      <div class="patient-item">
+    <div class="patient-list">
+      <div class="patient-item" v-for="item in list" :key="item.id">
         <div class="info">
           <span class="name">{{ item.name }}</span>
           <!-- 说明❓：身份证脱敏处理：/^(.{6})(?:\d+)(.{4})$/，显示前6位和后4位，出生日期隐藏
@@ -66,8 +75,8 @@ onMounted(() => {
     <van-popup v-model:show="show" position="top">
       <!-- 点击返回就关闭弹层 -->
       <cp-nav-bar title="添加患者" right-text="保存" :back="() => (show = false)"></cp-nav-bar>
-      <div>1111</div>
       <!-- 表单 -->
+      <cp-radio-btn :options="options" v-model="gender"></cp-radio-btn>
     </van-popup>
   </div>
 </template>
@@ -75,12 +84,14 @@ onMounted(() => {
 <style lang="scss" scoped>
 .patient-page {
   padding: 46px 0 80px;
-}
-::v-deep .van-popup {
-  width: 100%;
-  height: 100%;
-  padding-top: 46px;
-  box-sizing: border-box;
+  ::v-deep() {
+    .van-popup {
+      width: 100%;
+      height: 100%;
+      padding-top: 46px;
+      box-sizing: border-box;
+    }
+  }
 }
 
 .patient-change {
