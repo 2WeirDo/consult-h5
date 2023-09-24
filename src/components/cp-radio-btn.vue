@@ -4,7 +4,7 @@ defineProps<{
     label: string // 指定显示的文本
     value: string | number // 显示的值(和后台对应)
   }[]
-  modelValue?: string | number // 选中的value值
+  modelValue?: number // 选中的value值
 }>()
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string | number): void

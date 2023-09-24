@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getPatientList } from '@/api/user'
-import type { PatientList } from '@/types/user'
-import { onMounted, ref } from 'vue'
+import type { PatientList, Patient } from '@/types/user'
+import { onMounted, ref, computed } from 'vue'
 // import { showNotify } from 'vant'
 
 // 1. 查询家庭档案-患者列表
@@ -16,6 +16,8 @@ const loadList = async () => {
 // 控制新增患者弹层显隐
 const show = ref(false)
 const showPopup = () => {
+  // 填充默认值
+  patient.value = { ...initPatient }
   show.value = true
 }
 
@@ -26,7 +28,28 @@ const options = [
   { label: '女', value: 0 }
 ]
 // 存储选中的性别value值
-const gender = ref(0)
+// const gender = ref(0)
+
+// 新增表单
+// 准备默认值
+const initPatient: Patient = {
+  name: '',
+  idCard: '',
+  gender: 1,
+  defaultFlag: 0 // 是否为默认患者 1 为默认患者
+}
+// 克隆一份新数据，要不然是同一个对象。
+const patient = ref<Patient>({ ...initPatient })
+
+// 默认值需要转换
+const defaultFlag = computed({
+  get() {
+    return patient.value.defaultFlag === 1 ? true : false
+  },
+  set(value) {
+    patient.value.defaultFlag = value ? 1 : 0
+  }
+})
 
 onMounted(() => {
   loadList()
@@ -72,11 +95,28 @@ onMounted(() => {
     </div>
 
     <!-- 新增患者弹层 -->
-    <van-popup v-model:show="show" position="top">
-      <!-- 点击返回就关闭弹层 -->
-      <cp-nav-bar title="添加患者" right-text="保存" :back="() => (show = false)"></cp-nav-bar>
+    <van-popup v-model:show="show" position="right">
+      <cp-nav-bar :back="() => (show = false)" title="添加患者" right-text="保存"></cp-nav-bar>
       <!-- 表单 -->
-      <cp-radio-btn :options="options" v-model="gender"></cp-radio-btn>
+      <van-form autocomplete="off">
+        <van-field v-model="patient.name" label="真实姓名" placeholder="请输入真实姓名" />
+        <van-field v-model="patient.idCard" label="身份证号" placeholder="请输入身份证号" />
+        <van-field label="性别">
+          <!-- 单选按钮组件 -->
+          <template #input>
+            <cp-radio-btn :options="options" v-model="patient.gender"></cp-radio-btn>
+          </template>
+        </van-field>
+        <van-field label="默认就诊人">
+          <template #input>
+            <!-- 说明：直接绑定存储的是boolean值 -->
+            <!-- <van-checkbox round v-model="patient.defaultFlag" /> -->
+            <!-- 使用计算属性转换 -->
+            <!-- 组件需要的是 布尔 类型，需要通过计算属性转换一下 -->
+            <van-checkbox round v-model="defaultFlag" />
+          </template>
+        </van-field>
+      </van-form>
     </van-popup>
   </div>
 </template>
