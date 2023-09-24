@@ -28,4 +28,8 @@ export const getUserInfo = () => request.get<any, UserInfo>('/patient/myUser')
 export const getPatientList = () => request.get<any, PatientList>('patient/mylist')
 
 // 新增患者
+// 因为返回的东西也用不到, 因此post后可以不传入类型
 export const addPatient = (patient: Patient) => request.post('patient/add', patient)
+
+// 编辑患者信息
+export const editPatient = (patient: Patient) => request.put('/patient/update', patient)

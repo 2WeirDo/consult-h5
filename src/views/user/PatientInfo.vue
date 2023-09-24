@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getPatientList, addPatient } from '@/api/user'
+import { getPatientList, addPatient, editPatient } from '@/api/user'
 import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
 import { showFailToast, showSuccessToast } from 'vant'
@@ -19,9 +19,16 @@ const loadList = async () => {
 // 2. 新增患者功能
 // 控制新增患者弹层显隐
 const show = ref(false)
-const showPopup = () => {
-  // 填充默认值
-  patient.value = { ...initPatient }
+const showPopup = (item?: Patient) => {
+  if (item) {
+    // 可以根据是否存在id判断是添加或者编辑操作(所以我们这里多拿取了一个id)
+    // 如果点的是编辑，解构出后台需要的数据
+    const { id, gender, name, idCard, defaultFlag } = item
+    patient.value = { id, gender, name, idCard, defaultFlag }
+  } else {
+    // 填充默认值
+    patient.value = { ...initPatient }
+  }
   show.value = true
 }
 
@@ -68,10 +75,15 @@ const submit = async () => {
   if (patient.value.gender !== sex) return showFailToast('性别和身份证不符')
 
   // 3.添加患者
-  await addPatient(patient.value)
-  loadList()
-  show.value = false
-  showSuccessToast('添加成功')
+  try {
+    patient.value.id ? await editPatient(patient.value) : await addPatient(patient.value)
+    show.value = false
+    // 刷新患者列表
+    loadList()
+    showSuccessToast(patient.value.id ? '编辑成功' : '添加成功')
+  } catch (error) {
+    console.log(error)
+  }
 }
 
 onMounted(() => {
@@ -102,11 +114,12 @@ onMounted(() => {
           <span>{{ item.genderValue }}</span>
           <span>{{ item.age }}岁</span>
         </div>
-        <div class="icon"><cp-icon name="user-edit" /></div>
+        <!-- 编辑按钮 -->
+        <div class="icon" @click="showPopup(item)"><cp-icon name="user-edit" /></div>
         <div class="tag" v-if="item.defaultFlag === 1">默认</div>
       </div>
       <!-- 限制患者数量 -->
-      <div class="patient-add" v-if="list.length < 6" @click="showPopup">
+      <div class="patient-add" v-if="list.length < 6" @click="showPopup()">
         <cp-icon name="user-add" />
         <p>添加患者</p>
       </div>
@@ -120,9 +133,10 @@ onMounted(() => {
     <!-- 新增患者弹层 -->
     <van-popup v-model:show="show" position="right">
       <!-- 点击保存执行表单校验 -->
+      <!-- 根据是否存在id判断是添加或者编辑操作 -->
       <cp-nav-bar
         :back="() => (show = false)"
-        title="添加患者"
+        :title="patient.id ? '编辑患者' : '添加患者'"
         @click-right="submit"
         right-text="保存"
       ></cp-nav-bar>
