@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { getPatientList } from '@/api/user'
+import { getPatientList, addPatient } from '@/api/user'
 import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
-import { showFailToast } from 'vant'
+import { showFailToast, showSuccessToast } from 'vant'
 
 // 导入校验身份证格式的插件
 import Validator from 'id-validator'
@@ -57,7 +57,7 @@ const defaultFlag = computed({
 
 // 点击导航栏保存按钮 => 提交
 // 身份证校验
-const submit = () => {
+const submit = async () => {
   // 1.校验是否输入
   if (!patient.value.name) return showFailToast('请输入患者姓名')
   if (!patient.value.idCard) return showFailToast('请输入身份证号')
@@ -66,6 +66,12 @@ const submit = () => {
   if (!validate.isValid(patient.value.idCard)) return showFailToast('身份证格式错误')
   const { sex } = validate.getInfo(patient.value.idCard)
   if (patient.value.gender !== sex) return showFailToast('性别和身份证不符')
+
+  // 3.添加患者
+  await addPatient(patient.value)
+  loadList()
+  show.value = false
+  showSuccessToast('添加成功')
 }
 
 onMounted(() => {

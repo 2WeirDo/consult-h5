@@ -1,4 +1,4 @@
-import type { User, CodeType, UserInfo, PatientList } from '@/types/user'
+import type { User, CodeType, UserInfo, PatientList, Patient } from '@/types/user'
 import { request } from '@/utils/request'
 
 // 说明 : 通过request.method<指定data数据类型>
@@ -26,3 +26,6 @@ export const getUserInfo = () => request.get<any, UserInfo>('/patient/myUser')
 
 // 获患者信息列表
 export const getPatientList = () => request.get<any, PatientList>('patient/mylist')
+
+// 新增患者
+export const addPatient = (patient: Patient) => request.post('patient/add', patient)
