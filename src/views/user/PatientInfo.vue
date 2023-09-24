@@ -2,7 +2,11 @@
 import { getPatientList } from '@/api/user'
 import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
-// import { showNotify } from 'vant'
+import { showFailToast } from 'vant'
+
+// 导入校验身份证格式的插件
+import Validator from 'id-validator'
+const validate = new Validator()
 
 // 1. 查询家庭档案-患者列表
 // 是数组就可以不用类型断言, 因为它有初始值了
@@ -33,7 +37,7 @@ const options = [
 // 新增表单
 // 准备默认值
 const initPatient: Patient = {
-  name: '',
+  name: 'cxk',
   idCard: '',
   gender: 1,
   defaultFlag: 0 // 是否为默认患者 1 为默认患者
@@ -50,6 +54,19 @@ const defaultFlag = computed({
     patient.value.defaultFlag = value ? 1 : 0
   }
 })
+
+// 点击导航栏保存按钮 => 提交
+// 身份证校验
+const submit = () => {
+  // 1.校验是否输入
+  if (!patient.value.name) return showFailToast('请输入患者姓名')
+  if (!patient.value.idCard) return showFailToast('请输入身份证号')
+
+  // 2.校验身份证格式 (使用插件)
+  if (!validate.isValid(patient.value.idCard)) return showFailToast('身份证格式错误')
+  const { sex } = validate.getInfo(patient.value.idCard)
+  if (patient.value.gender !== sex) return showFailToast('性别和身份证不符')
+}
 
 onMounted(() => {
   loadList()
@@ -96,7 +113,13 @@ onMounted(() => {
 
     <!-- 新增患者弹层 -->
     <van-popup v-model:show="show" position="right">
-      <cp-nav-bar :back="() => (show = false)" title="添加患者" right-text="保存"></cp-nav-bar>
+      <!-- 点击保存执行表单校验 -->
+      <cp-nav-bar
+        :back="() => (show = false)"
+        title="添加患者"
+        @click-right="submit"
+        right-text="保存"
+      ></cp-nav-bar>
       <!-- 表单 -->
       <van-form autocomplete="off">
         <van-field v-model="patient.name" label="真实姓名" placeholder="请输入真实姓名" />
