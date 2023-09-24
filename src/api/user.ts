@@ -33,3 +33,6 @@ export const addPatient = (patient: Patient) => request.post('patient/add', pati
 
 // 编辑患者信息
 export const editPatient = (patient: Patient) => request.put('/patient/update', patient)
+
+// 删除患者信息
+export const delPatient = (id: string) => request.delete(`/patient/del/${id}`)

@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { getPatientList, addPatient, editPatient } from '@/api/user'
+import { getPatientList, addPatient, editPatient, delPatient } from '@/api/user'
 import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
-import { showFailToast, showSuccessToast } from 'vant'
+import { showFailToast, showSuccessToast, showConfirmDialog } from 'vant'
 
 // 导入校验身份证格式的插件
 import Validator from 'id-validator'
@@ -74,7 +74,7 @@ const submit = async () => {
   const { sex } = validate.getInfo(patient.value.idCard)
   if (patient.value.gender !== sex) return showFailToast('性别和身份证不符')
 
-  // 3.添加患者
+  // 3.添加患者/编辑患者
   try {
     patient.value.id ? await editPatient(patient.value) : await addPatient(patient.value)
     show.value = false
@@ -83,6 +83,20 @@ const submit = async () => {
     showSuccessToast(patient.value.id ? '编辑成功' : '添加成功')
   } catch (error) {
     console.log(error)
+  }
+}
+
+// 4.删除患者
+const remove = async () => {
+  if (patient.value.id) {
+    await showConfirmDialog({
+      title: '温馨提示',
+      message: `您确认要删除 ${patient.value.name} 患者信息吗?`
+    })
+    await delPatient(patient.value.id)
+    show.value = false
+    loadList()
+    showSuccessToast('删除成功')
   }
 }
 
@@ -160,6 +174,10 @@ onMounted(() => {
           </template>
         </van-field>
       </van-form>
+      <!-- 在患者弹层中显示删除按钮 -->
+      <van-action-bar>
+        <van-action-bar-button @click="remove" type="danger" text="删除"></van-action-bar-button>
+      </van-action-bar>
     </van-popup>
   </div>
 </template>
