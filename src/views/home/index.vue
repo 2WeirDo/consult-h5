@@ -74,6 +74,7 @@
     <!-- 通过 v-model:active 绑定当前激活标签对应的索引值，在标签指定 name 属性的情况下，v-model:active 的值为当前标签的 name -->
     <van-tabs shrink sticky v-model:active="active">
       <van-tab title="关注" name="like">
+        <!-- 引入关注医生模块 -->
         <follow-doctor></follow-doctor>
         <knowledge-list type="like" />
       </van-tab>

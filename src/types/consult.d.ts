@@ -35,3 +35,40 @@ export type KnowledgeParams = {
   current: number
   pageSize: number
 }
+
+// 通用的分页查询参数
+export type PageParams = {
+  current: number
+  pageSize: number
+}
+
+// 文章列表查询参数，复用PageParams
+export type KnowledgeParams = PageParams & {
+  type: KnowledgeType
+}
+
+// 医生卡片
+export type Doctor = {
+  id: string
+  name: string
+  avatar: string
+  hospitalName: string
+  gradeName: string
+  depName: string
+  positionalTitles: string
+  likeFlag: 0 | 1
+  serviceFee: number
+  consultationNum: number
+  score: number
+  major: string
+}
+
+// 医生列表
+export type DoctorList = Doctor[]
+
+// 医生分页
+export type DoctorPage = {
+  pageTotal: number
+  total: number
+  rows: DoctorList
+}
