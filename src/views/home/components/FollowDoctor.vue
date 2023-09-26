@@ -40,9 +40,9 @@ onMounted(() => loadData())
       <!-- 宽度需要根据屏幕宽度做自适应 -->
       <van-swipe
         :width="(150 / 375) * width"
-        :autoplay="2000"
+        :autoplay="2500"
         :show-indicators="false"
-        :loop="false"
+        :loop="true"
       >
         <van-swipe-item v-for="item in list" :key="item.id">
           <doctor-card :item="item" />
