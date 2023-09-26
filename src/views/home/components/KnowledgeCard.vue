@@ -1,6 +1,7 @@
 <script setup lang="ts">
+import { useFollow } from '@/hooks'
 import type { Knowledge } from '@/types/consult'
-
+const { follow, loading } = useFollow('knowledge')
 defineProps<{ item: Knowledge }>()
 </script>
 
@@ -14,7 +15,14 @@ defineProps<{ item: Knowledge }>()
           {{ item.creatorHospatalName }} {{ item.creatorDep }} {{ item.creatorTitles }}
         </p>
       </div>
-      <van-button class="btn" size="small" round>
+      <van-button
+        class="btn"
+        size="small"
+        :loading="loading"
+        round
+        @click="follow(item)"
+        :class="{ liked: item.likeFlag === 1 }"
+      >
         {{ item.likeFlag === 1 ? '已关注' : '+ 关注' }}
       </van-button>
     </div>
@@ -55,6 +63,11 @@ defineProps<{ item: Knowledge }>()
         color: var(--cp-tip);
         font-size: 12px;
       }
+    }
+    .liked {
+      background-color: rgb(194, 194, 194);
+      border-color: rgb(194, 194, 194) !important;
+      color: white !important;
     }
     .btn {
       padding: 0 12px;
