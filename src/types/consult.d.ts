@@ -106,3 +106,19 @@ export type Consult = {
 // Partial 转换为全部可选  两个内置的泛型类型
 // 全部可选是因为信息是一点一点累加上去的
 export type PartialConsult = Partial<Consult>
+
+// 4.科室信息
+export type SubDep = {
+  id: string
+  name: string
+}
+// 一级科室
+export type TopDep = SubDep & {
+  child: SubDep[]
+}
+
+// 病情描述全部必填
+export type ConsultIllness = Pick<
+  PartialConsult,
+  'illnessDesc' | 'illnessTime' | 'consultFlag' | 'pictures'
+>

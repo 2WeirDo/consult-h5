@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useConsultStore } from '@/stores'
+
+const store = useConsultStore()
+</script>
 
 <template>
   <!-- 1. 极速问诊开始 -->
@@ -9,8 +13,8 @@
       <p class="text"><span>20s</span> 快速匹配专业医生</p>
     </div>
     <div class="fast-type">
-      <!-- 问诊类型选择 -->
-      <router-link to="/consult/dep" class="item">
+      <!-- 问诊级别选择 -->
+      <router-link to="/consult/dep" class="item" @click="store.setIllnessType(1)">
         <cp-icon class="pic" name="consult-doctor"></cp-icon>
         <div class="info">
           <p>三甲图文问诊</p>
@@ -18,7 +22,7 @@
         </div>
         <van-icon name="arrow"></van-icon>
       </router-link>
-      <router-link to="/consult/dep" class="item">
+      <router-link to="/consult/dep" class="item" @click="store.setIllnessType(0)">
         <cp-icon class="pic" name="consult-message"></cp-icon>
         <div class="info">
           <p>普通图文问诊</p>

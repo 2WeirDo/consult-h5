@@ -31,6 +31,7 @@ const store = useConsultStore()
           </router-link>
         </van-col>
         <van-col span="8">
+          <!-- 这里setType直接传值2也行, 但是我们要语义化一点就导入枚举类型便可, 并且方便维护 -->
           <router-link to="/consult/fast" @click="store.setType(ConsultType.Fast)" class="nav">
             <cp-icon name="home-graphic"></cp-icon>
             <p class="title">极速问诊</p>

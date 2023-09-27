@@ -3,6 +3,23 @@ import { getPatientList, addPatient, editPatient, delPatient } from '@/api/user'
 import type { PatientList, Patient } from '@/types/user'
 import { onMounted, ref, computed } from 'vue'
 import { showFailToast, showSuccessToast, showConfirmDialog } from 'vant'
+import { useRouter, useRoute } from 'vue-router'
+import { useConsultStore } from '@/stores/index'
+import { showToast } from 'vant'
+
+// 这个页面的功能是否是选择患者
+const route = useRoute()
+// 问号参数通过query拿到, 动态参数通过params拿到
+const isChange = computed(() => route.query.isChange === '1')
+
+// 存储点击选中患者ID作为标识
+const patientId = ref<string>()
+const selectedPatient = (item: Patient) => {
+  if (isChange.value) {
+    // 如果支持选择功能
+    patientId.value = item.id
+  }
+}
 
 // 导入校验身份证格式的插件
 import Validator from 'id-validator'
@@ -14,6 +31,14 @@ const list = ref<PatientList>([])
 const loadList = async () => {
   const res = await getPatientList()
   list.value = res
+  // 设置默认选中的ID，当你是选择患者的时候，且有患者信息的时候
+  if (isChange.value && list.value.length) {
+    // 寻找默认患者
+    const defPatient = list.value.find((item) => item.defaultFlag === 1)
+    if (defPatient) patientId.value = defPatient.id
+    // 没有默认患者那就返回第一个默认选中
+    else patientId.value = list.value[0].id
+  }
 }
 
 // 2. 新增患者功能
@@ -100,6 +125,15 @@ const remove = async () => {
   }
 }
 
+// 点击下一步
+const store = useConsultStore()
+const router = useRouter()
+const next = async () => {
+  if (!patientId.value) return showToast('请选问诊择患者') // 判断是否选择患者
+  store.setPatient(patientId.value) // 存储患者信息到pinia
+  router.push('/consult/pay') // 跳转到支付页面
+}
+
 onMounted(() => {
   loadList()
 })
@@ -107,15 +141,21 @@ onMounted(() => {
 
 <template>
   <div class="patient-page">
-    <cp-nav-bar title="家庭档案" />
+    <cp-nav-bar :title="isChange ? '选择患者' : '家庭档案'" />
     <!-- 头部选择提示 -->
-    <div class="patient-change" v-if="false">
+    <div class="patient-change" v-if="isChange">
       <h3>请选择患者信息</h3>
       <p>以便医生给出更准确的治疗，信息仅医生可见</p>
     </div>
     <!-- 患者列表 -->
     <div class="patient-list">
-      <div class="patient-item" v-for="item in list" :key="item.id">
+      <div
+        class="patient-item"
+        v-for="item in list"
+        :key="item.id"
+        @click="selectedPatient(item)"
+        :class="{ selected: patientId === item.id }"
+      >
         <div class="info">
           <span class="name">{{ item.name }}</span>
           <!-- 说明❓：身份证脱敏处理：/^(.{6})(?:\d+)(.{4})$/，显示前6位和后4位，出生日期隐藏
@@ -140,8 +180,8 @@ onMounted(() => {
       <div class="patient-tip">最多可添加 6 人</div>
     </div>
     <!-- 患者选择下一步 -->
-    <div class="patient-next" v-if="false">
-      <van-button type="primary" round block>下一步</van-button>
+    <div class="patient-next" v-if="isChange">
+      <van-button type="primary" round block @click="next">下一步</van-button>
     </div>
 
     <!-- 新增患者弹层 -->

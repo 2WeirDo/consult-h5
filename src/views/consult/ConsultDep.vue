@@ -1,7 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { getAllDep } from '@/api/consult'
+import type { TopDep } from '@/types/consult'
+import { onMounted, ref, computed } from 'vue'
+import { useConsultStore } from '@/stores'
 
+const store = useConsultStore()
+
+// active决定当前选中的一级科室
 const active = ref(0)
+
+// 获取所有科室数据
+const allDep = ref<TopDep[]>([])
+const getAllDepApi = async () => {
+  const res = await getAllDep()
+  allDep.value = res
+}
+onMounted(() => {
+  getAllDepApi()
+})
+// 二级科室，注意：组件初始化没有数据 child 可能拿不到(因为allDep也是异步请求的数据, 默认为[])
+// 注意这里用到computed, 且省略了{}, 否则要加return
+const subDep = computed(() => allDep.value[active.value]?.child)
 </script>
 
 <template>
@@ -11,16 +30,22 @@ const active = ref(0)
     <div class="wrapper">
       <!-- 一级科室 -->
       <van-sidebar v-model="active">
-        <van-sidebar-item title="内科" />
-        <van-sidebar-item title="外科" />
-        <van-sidebar-item title="皮肤科" />
-        <van-sidebar-item title="骨科" />
+        <!-- 这里要是一级科室后没有二级科室我们就不渲染, 但这里不知道为什么不行 -->
+        <!-- <template v-for="top in allDep">
+          <van-sidebar-item v-if="top.child.length !== 0" :title="top.name" :key="top.id" />
+        </template> -->
+        <van-sidebar-item v-for="top in allDep" :title="top.name" :key="top.id" />
       </van-sidebar>
-      <!-- 二级科室 -->
+      <!-- 二级科室: 跟随一级科室动态切换 -->
       <div class="sub-dep">
-        <router-link to="/consult/illness">科室一</router-link>
-        <router-link to="/consult/illness">科室二</router-link>
-        <router-link to="/consult/illness">科室三</router-link>
+        <router-link
+          to="/consult/illness"
+          v-for="sub in subDep"
+          :key="sub.id"
+          @click="store.setDep(sub.id)"
+        >
+          {{ sub.name }}
+        </router-link>
       </div>
     </div>
   </div>

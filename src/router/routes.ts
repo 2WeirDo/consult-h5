@@ -36,6 +36,21 @@ const routes = [
     component: () => import('@/views/login/index.vue'),
     meta: { title: '登录' }
   },
+  {
+    path: '/consult/fast',
+    component: () => import('@/views/consult/ConsultFast.vue'),
+    meta: { title: '极速问诊' }
+  },
+  {
+    path: '/consult/dep',
+    component: () => import('@/views/consult/ConsultDep.vue'),
+    meta: { title: '选择科室' }
+  },
+  {
+    path: '/consult/illness',
+    component: () => import('@/views/consult/ConsultIllness.vue'),
+    meta: { title: '病情描述' }
+  },
   // 测试页面
   {
     path: '/test',
