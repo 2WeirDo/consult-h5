@@ -51,6 +51,12 @@ const routes = [
     component: () => import('@/views/consult/ConsultIllness.vue'),
     meta: { title: '病情描述' }
   },
+  {
+    path: '/consult/pay',
+    component: () => import('@/views/consult/ConsultPay.vue'),
+    meta: { title: '问诊支付' }
+  },
+
   // 测试页面
   {
     path: '/test',
