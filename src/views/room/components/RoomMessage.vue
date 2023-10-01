@@ -4,7 +4,27 @@ import EvaluateCard from './EvaluateCard.vue'
 
 import { ConsultTime, MsgType } from '@/enums'
 import type { Message } from '@/types/room'
+import { showFailToast, showImagePreview } from 'vant'
+import type { Image } from '@/types/consult'
 
+// 导入患病时间选项和是否就诊常量
+import { timeOptions, flagOptions } from '@/api/const'
+
+// 获取患病时间label信息
+const getIllnessTimeText = (time: ConsultTime) =>
+  timeOptions.find((item) => item.value === time)?.label
+// 获取是否就诊label信息
+const getConsultFlagText = (flag: 0 | 1) => flagOptions.find((item) => item.value === flag)?.label
+
+const previewImg = (pictures?: Image[]) => {
+  // 传入一个数组, 里面包括图片地址, 有多个就传入多个地址, 逗号分隔 showImagePreview([url1, url2, url3, ...])
+  // 这里我们只要url, 就map获取地址的数组就行了
+  if (pictures && pictures.length) {
+    showImagePreview(pictures.map((item) => item.url))
+  } else {
+    showFailToast('没有传入病情描述图片')
+  }
+}
 defineProps<{ list: Message[] }>()
 </script>
 
@@ -21,15 +41,17 @@ defineProps<{ list: Message[] }>()
           {{ msg.consultRecord.patientInfo.age }}岁
         </p>
         <p>
-          {{ msg.consultRecord.illnessTime }} |
-          {{ msg.consultRecord.consultFlag }}
+          <!-- 患病时间 -->
+          {{ getIllnessTimeText(msg.consultRecord.illnessTime) }} |
+          <!-- 是否就诊过 --- 后端没返回文字, 它只返回一个标识数字 -->
+          {{ getConsultFlagText(msg.consultRecord.consultFlag) }}
         </p>
       </div>
       <van-row>
         <van-col span="6">病情描述</van-col>
         <van-col span="18">{{ msg.consultRecord?.illnessDesc }}</van-col>
         <van-col span="6">图片</van-col>
-        <van-col span="18"> 点击查看 </van-col>
+        <van-col span="18" @click="previewImg(msg.consultRecord?.pictures)"> 点击查看 </van-col>
       </van-row>
     </div>
     <!--2.  温馨提示 -->
