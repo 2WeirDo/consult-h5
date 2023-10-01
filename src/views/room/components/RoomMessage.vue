@@ -32,8 +32,8 @@ import EvaluateCard from './EvaluateCard.vue'
         <span>医护人员正在赶来，请耐心等候</span>
       </div>
     </div>
-     <!-- 4. 发送文字 -->
-     <div class="msg msg-to" v-if="false">
+    <!-- 4. 发送文字 -->
+    <div class="msg msg-to" v-if="false">
       <div class="content">
         <div class="time">20:12</div>
         <div class="pao">大夫你好？</div>

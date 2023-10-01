@@ -102,8 +102,9 @@ const pay = async () => {
     orderId: orderId.value,
     paymentMethod: paymentMethod.value,
     // 支付成功后会自动回调到payCallback这个地址
-    payCallback: 'http://localhost/room'
+    payCallback: 'http://localhost:5173/room'
   })
+  console.log(res)
   // 跳转到支付宝平台进行支付
   // 注意这里使用window.location.href实现页面跳转, 这是跳转到另外一个网站, router用不了, 因为它是我们自己的路由对象,要设置页面的
   window.location.href = res.payUrl
