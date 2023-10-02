@@ -144,15 +144,15 @@ defineProps<{ list: Message[] }>()
         <div class="foot"><span>购买药品</span></div>
       </div>
     </div>
-    <!-- 9. 订单取消 -->
-    <div class="msg msg-tip msg-tip-cancel" v-if="false">
+    <!-- 9. 订单取消/关闭诊室 -->
+    <div class="msg msg-tip msg-tip-cancel" v-if="msgType === MsgType.NotifyCancel">
       <div class="content">
-        <span>订单取消</span>
+        <span>{{ msg.content }}</span>
       </div>
     </div>
     <!-- 10. 医生评价 -->
-    <div class="msg" v-if="false">
-      <evaluate-card></evaluate-card>
+    <div class="msg" v-if="msgType === MsgType.CardEva || msgType === MsgType.CardEvaForm">
+      <evaluate-card :evaluateDoc="msg.evaluateDoc"></evaluate-card>
     </div>
   </template>
 </template>

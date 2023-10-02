@@ -12,6 +12,7 @@ import { MsgType, OrderType } from '@/enums'
 import type { Message, TimeMessages } from '@/types/room'
 import type { ConsultOrderItem } from '@/types/consult'
 import { getConsultOrderDetail } from '@/api/consult'
+import { provide } from 'vue'
 
 const list = ref<Message[]>([])
 const store = useUserStore()
@@ -121,6 +122,19 @@ const sendImage = (img: Image) => {
     msg: { picture: img }
   })
 }
+
+// 4.评价医生
+provide('consult', consult)
+// 评价成功，修改评价消息状态和数据，切换卡片展示
+const completeEva = (score: number) => {
+  // 获取评价信息数据
+  const item = list.value.find((item) => item.msgType === MsgType.CardEvaForm)
+  if (item) {
+    item.msg.evaluateDoc = { score }
+    item.msgType = MsgType.CardEva
+  }
+}
+provide('completeEva', completeEva)
 
 onMounted(() => {
   // 组件挂载建立连接

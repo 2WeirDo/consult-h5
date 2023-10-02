@@ -1,12 +1,50 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { EvaluateDoc } from '@/types/room'
+
+defineProps<{
+  // 接收评价数据：存在说明评价过，相反没有
+  evaluateDoc?: EvaluateDoc
+}>()
+
+import { showToast } from 'vant'
+import { computed, inject, ref, type Ref } from 'vue'
+import type { ConsultOrderItem } from '@/types/consult'
+// 说明❓：Ref<type> 指定类型为Ref，提交时才可以使用.value访问变量
+import { evaluateConsultOrder } from '@/api/consult'
+
+const consult = inject<Ref<ConsultOrderItem>>('consult')
+
+const score = ref(0)
+const anonymousFlag = ref(false)
+const content = ref('')
+const disabled = computed(() => !score.value || !content.value)
+
+const completeEva = inject<(score: number) => void>('completeEva')
+const onSubmit = async () => {
+  if (!score.value) return showToast('请选择评分')
+  if (!content.value) return showToast('请输入评价')
+  if (!consult?.value) return showToast('未找到订单')
+  if (consult.value.docInfo?.id) {
+    await evaluateConsultOrder({
+      docId: consult.value?.docInfo?.id,
+      orderId: consult.value?.id,
+      score: score.value,
+      content: content.value,
+      anonymousFlag: anonymousFlag.value ? 1 : 0
+    })
+  }
+  // 修改消息：评价请求成功，改成已评价
+  completeEva && completeEva(score.value)
+}
+</script>
 
 <template>
   <!-- 1. 已经评价过 -->
-  <div class="evalutate-card" v-if="true">
+  <div class="evalutate-card" v-if="evaluateDoc">
     <p class="title">医生服务评价</p>
     <p class="desc">我们会更加努力提升服务质量</p>
     <van-rate
-      :modelValue="3"
+      :modelValue="evaluateDoc.score"
       size="7vw"
       gutter="3vw"
       color="#FADB14"
@@ -19,6 +57,7 @@
     <p class="title">感谢您的评价</p>
     <p class="desc">本次在线问诊服务您还满意吗？</p>
     <van-rate
+      v-model="score"
       size="7vw"
       gutter="3vw"
       color="#FADB14"
@@ -26,6 +65,7 @@
       void-color="rgba(0,0,0,0.04)"
     />
     <van-field
+      v-model="content"
       type="textarea"
       maxlength="150"
       show-word-limit
@@ -33,8 +73,8 @@
       placeholder="请描述您对医生的评价或是在医生看诊过程中遇到的问题"
     ></van-field>
     <div class="footer">
-      <van-checkbox>匿名评价</van-checkbox>
-      <van-button type="primary" size="small" round>
+      <van-checkbox v-model="anonymousFlag">匿名评价</van-checkbox>
+      <van-button :disabled="disabled" @click="onSubmit" type="primary" size="small" round>
         提交评价
       </van-button>
     </div>
