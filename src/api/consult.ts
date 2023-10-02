@@ -64,3 +64,7 @@ export const evaluateConsultOrder = (data: {
   content: string // 评价留言
   anonymousFlag: 0 | 1 // 是否匿名评价：1匿名 0实名
 }) => request.post('/patient/order/evaluate', data)
+
+// 查看处方
+export const getPrescriptionPic = (id: string) =>
+  request.get<any, { url: string }>(`/patient/consult/prescription/${id}`)

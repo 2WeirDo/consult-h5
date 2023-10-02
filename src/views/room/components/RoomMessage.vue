@@ -9,8 +9,12 @@ import type { Image } from '@/types/consult'
 
 // 导入患病时间选项和是否就诊常量
 import { timeOptions, flagOptions } from '@/api/const'
+import { getPrescriptionPic } from '@/api/consult'
 
 import dayjs from 'dayjs'
+import { useRouter } from 'vue-router'
+import { PrescriptionStatus } from '@/enums'
+import type { Prescription } from '@/types/room'
 
 import { useUserStore } from '@/stores'
 const store = useUserStore()
@@ -41,6 +45,31 @@ const formatTime = (time: string) => dayjs(time).format('HH:mm')
 const loadSuccess = () => {
   // 等奥图片下载渲染完执行滚动
   window.scrollTo(0, document.body.scrollHeight)
+}
+
+// 5.查看处方
+// 传入处方id
+const showPrescription = async (id?: string) => {
+  if (id) {
+    // if判断排除undefined情况, 限定类型
+    const res = await getPrescriptionPic(id)
+    // 这个方法是传入一个数组
+    showImagePreview([res.url])
+  }
+}
+
+// 6.点击购买处方中的药品
+// 点击处方的跳转
+const router = useRouter()
+const buy = (pre?: Prescription) => {
+  // 同样要判断一下
+  if (pre) {
+    // 1. 如果处方失效：提示即可
+    if (pre.status === PrescriptionStatus.Invalid) return showFailToast('处方已失效')
+    // 2. 没有支付：去药品预支付页面
+    if (pre.status === PrescriptionStatus.NotPayment)
+      return router.push(`/medicine/pay?id=${pre.id}`)
+  }
 }
 
 defineProps<{ list: Message[] }>()
@@ -122,26 +151,33 @@ defineProps<{ list: Message[] }>()
       </div>
     </div>
     <!-- 8. 处方消息 -->
-    <div class="msg msg-recipe" v-if="false">
+    <div class="msg msg-recipe" v-if="msgType === MsgType.CardPre">
       <div class="content">
         <div class="head van-hairline--bottom">
           <div class="head-tit">
             <h3>电子处方</h3>
-            <p>原始处方 <van-icon name="arrow"></van-icon></p>
+            <p @click="showPrescription(msg.prescription?.id)">
+              原始处方 <van-icon name="arrow"></van-icon>
+            </p>
           </div>
-          <p>李富贵 男 31岁 血管性头痛</p>
-          <p>开方时间：2022-01-15 14:21:42</p>
+          <p>
+            {{ msg.prescription?.name }}
+            {{ msg.prescription?.genderValue }}
+            {{ msg.prescription?.age }}岁
+            {{ msg.prescription?.diagnosis }}
+          </p>
+          <p>开方时间：{{ msg.prescription?.createTime }}</p>
         </div>
         <div class="body">
-          <div class="body-item" v-for="i in 2" :key="i">
+          <div class="body-item" v-for="med in msg.prescription?.medicines" :key="med.id">
             <div class="durg">
-              <p>优赛明 维生素E乳</p>
-              <p>口服，每次1袋，每天3次，用药3天</p>
+              <p>{{ med.name }} {{ med.specs }}</p>
+              <p>{{ med.usageDosag }}</p>
             </div>
-            <div class="num">x1</div>
+            <div class="num">x{{ med.quantity }}</div>
           </div>
         </div>
-        <div class="foot"><span>购买药品</span></div>
+        <div class="foot"><span @click="buy(msg.prescription)">购买药品</span></div>
       </div>
     </div>
     <!-- 9. 订单取消/关闭诊室 -->
