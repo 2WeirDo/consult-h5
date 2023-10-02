@@ -124,6 +124,8 @@ const sendImage = (img: Image) => {
 }
 
 // 4.评价医生
+// 注意❗: 这里不能加.value: .value是获取响应式变量的值(默认值),不是响应变量 不能用在依赖注入, 需要注入响应变量本身
+// 异步数据一定要注入成响应式的
 provide('consult', consult)
 // 评价成功，修改评价消息状态和数据，切换卡片展示
 const completeEva = (score: number) => {

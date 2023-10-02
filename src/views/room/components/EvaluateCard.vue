@@ -9,25 +9,28 @@ defineProps<{
 import { showToast } from 'vant'
 import { computed, inject, ref, type Ref } from 'vue'
 import type { ConsultOrderItem } from '@/types/consult'
-// 说明❓：Ref<type> 指定类型为Ref，提交时才可以使用.value访问变量
-import { evaluateConsultOrder } from '@/api/consult'
 
+// 说明❓：Ref<type> 指定类型为Ref，提交时才可以使用.value访问变量
+// 接收爷爷组件注入订单详情数据和更新msg方法
+import { evaluateConsultOrder } from '@/api/consult'
 const consult = inject<Ref<ConsultOrderItem>>('consult')
+const completeEva = inject<(score: number) => void>('completeEva') // 接收更新msg方法
 
 const score = ref(0)
 const anonymousFlag = ref(false)
 const content = ref('')
 const disabled = computed(() => !score.value || !content.value)
 
-const completeEva = inject<(score: number) => void>('completeEva')
 const onSubmit = async () => {
   if (!score.value) return showToast('请选择评分')
   if (!content.value) return showToast('请输入评价')
   if (!consult?.value) return showToast('未找到订单')
   if (consult.value.docInfo?.id) {
     await evaluateConsultOrder({
-      docId: consult.value?.docInfo?.id,
-      orderId: consult.value?.id,
+      // 拿到爷爷组件注入的响应式数据
+      docId: consult.value?.docInfo?.id, // 医生id
+      orderId: consult.value?.id, // 订单id
+      // 拿到表单评价数据
       score: score.value,
       content: content.value,
       anonymousFlag: anonymousFlag.value ? 1 : 0

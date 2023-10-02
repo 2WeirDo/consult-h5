@@ -188,6 +188,7 @@ defineProps<{ list: Message[] }>()
     </div>
     <!-- 10. 医生评价 -->
     <div class="msg" v-if="msgType === MsgType.CardEva || msgType === MsgType.CardEvaForm">
+      <!-- 传入已经评价过的数据进行回显 -->
       <evaluate-card :evaluateDoc="msg.evaluateDoc"></evaluate-card>
     </div>
   </template>
