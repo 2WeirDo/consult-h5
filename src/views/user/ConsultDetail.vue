@@ -6,14 +6,26 @@ import { timeOptions, flagOptions } from '@/api/const'
 
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useCopy } from '@/hooks/index'
 
 const route = useRoute()
+
+// 根据订单ID, 获取订单详情数据渲染
 const item = ref<ConsultOrderItem>()
 onMounted(async () => {
   const res = await getConsultOrderDetail(route.params.id as string)
   item.value = res
   console.log('订单详情：', res)
 })
+
+// 复制订单号
+/**
+ * 1. copy 函数=》使用：copy(复制文本)=》copy方法会把传入的文本存储到系统粘贴板
+   2. copied ref响应变量 =》true 复制成功 | false 复制失败
+   3. isSupported ref响应变量 =》true 授权支持 | false 未授权不支持
+ */
+// 封装为hook
+const { onCopy } = useCopy()
 </script>
 
 <template>
@@ -28,8 +40,8 @@ onMounted(async () => {
             orange: item.status === OrderType.ConsultPay,
             green: item.status === OrderType.ConsultChat
           }"
-          >{{ item.statusValue }}</span
-        >
+          >{{ item.statusValue }}
+        </span>
         <p class="tip">服务医生信息</p>
       </div>
       <div class="card">
@@ -62,8 +74,9 @@ onMounted(async () => {
       <h3>订单信息</h3>
       <van-cell-group :border="false">
         <van-cell title="订单编号">
+          <!-- 复制功能实现 -->
           <template #value>
-            <span class="copy">复制</span>
+            <span class="copy" @click="onCopy(item?.orderNo)">复制</span>
             {{ item.orderNo }}
           </template>
         </van-cell>

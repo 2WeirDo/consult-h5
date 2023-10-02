@@ -1,10 +1,12 @@
 // 放置全局可复用的钩子函数
 
 import { followDoctor } from '@/api/consult'
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 import type { FollowType } from '@/types/consult'
 import { getPrescriptionPic } from '@/api/consult'
 import { showImagePreview } from 'vant'
+import { useClipboard } from '@vueuse/core' // 使用vueuse
+import { showSuccessToast, showFailToast } from 'vant'
 
 // 关注医生或文章逻辑
 const useFollow = (type: FollowType = 'doc') => {
@@ -38,4 +40,22 @@ const useShowPrescription = () => {
   return { showPrescription }
 }
 
-export { useFollow, useShowPrescription }
+// 复制文本
+const useCopy = () => {
+  const { copy, copied, isSupported } = useClipboard()
+
+  // 1. 复制回调
+  const onCopy = (copyText: string) => {
+    // isSupported判断浏览器是否支持复制
+    if (!isSupported.value) showFailToast('未授权, 不支持')
+    copy(copyText || '')
+  }
+  // 2. 复制后提示
+  watch(copied, () => {
+    // 注意传入的是响应式变量, 而不是.value值
+    if (copied.value) showSuccessToast('已复制') // 为true则复制成功
+  })
+  return { onCopy }
+}
+
+export { useFollow, useShowPrescription, useCopy }

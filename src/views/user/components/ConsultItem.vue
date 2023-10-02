@@ -116,6 +116,7 @@ const { showPrescription } = useShowPrescription()
       >
     </div>
     <!-- 患者信息 -->
+    <!-- 这里的路由也支持vue2写法, 模板可用 -->
     <div class="body" @click="$router.push(`/user/consult/${item.id}`)">
       <div class="body-row">
         <div class="body-label">患者</div>
@@ -209,7 +210,14 @@ const { showPrescription } = useShowPrescription()
       <van-button type="warning" plain size="small" round :to="`/room?orderId=${item.id}`">
         问诊记录
       </van-button>
-      <van-button v-if="!item.evaluateId" type="primary" plain size="small" round>
+      <van-button
+        v-if="!item.evaluateId"
+        type="primary"
+        :to="`/room?orderId=${item.id}`"
+        plain
+        size="small"
+        round
+      >
         <!-- 这里没有实现去评价的功能 -->
         去评价
       </van-button>
