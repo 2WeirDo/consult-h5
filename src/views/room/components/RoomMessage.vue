@@ -10,12 +10,19 @@ import type { Image } from '@/types/consult'
 // 导入患病时间选项和是否就诊常量
 import { timeOptions, flagOptions } from '@/api/const'
 
+import dayjs from 'dayjs'
+
+import { useUserStore } from '@/stores'
+const store = useUserStore()
+
+// 1. 定义病情格式化数据
 // 获取患病时间label信息
 const getIllnessTimeText = (time: ConsultTime) =>
   timeOptions.find((item) => item.value === time)?.label
 // 获取是否就诊label信息
 const getConsultFlagText = (flag: 0 | 1) => flagOptions.find((item) => item.value === flag)?.label
 
+// 2.图片预览
 const previewImg = (pictures?: Image[]) => {
   // 传入一个数组, 里面包括图片地址, 有多个就传入多个地址, 逗号分隔 showImagePreview([url1, url2, url3, ...])
   // 这里我们只要url, 就map获取地址的数组就行了
@@ -25,12 +32,16 @@ const previewImg = (pictures?: Image[]) => {
     showFailToast('没有传入病情描述图片')
   }
 }
+
+// 3.格式化时间
+const formatTime = (time: string) => dayjs(time).format('HH:mm')
+
 defineProps<{ list: Message[] }>()
 </script>
 
 <template>
   <!-- 消息列表 -->
-  <template v-for="{ msgType, msg, id } in list" :key="id">
+  <template v-for="{ msgType, msg, id, createTime, fromAvatar, from } in list" :key="id">
     <!-- item的消息显示需要根据当前消息卡片类型, 匹配对应消息卡片进行渲染展示 -->
     <!-- 1. 病情描述 -->
     <div class="msg msg-illness" v-if="msgType === MsgType.CardPat">
@@ -67,20 +78,22 @@ defineProps<{ list: Message[] }>()
         <span>{{ msg.content }}</span>
       </div>
     </div>
-    <!-- 4. 发送文字 -->
-    <div class="msg msg-to" v-if="false">
+    <!-- 4. 发送文字：患者发的消息 -->
+    <!-- 确定为文字消息且当前发送人id确保为登陆人id -->
+    <div class="msg msg-to" v-if="msgType === MsgType.MsgText && store.user?.id === from">
       <div class="content">
-        <div class="time">20:12</div>
-        <div class="pao">大夫你好？</div>
+        <div class="time">{{ formatTime(createTime) }}</div>
+        <div class="pao">{{ msg.content }}</div>
       </div>
-      <van-image src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg" />
+      <van-image :src="store.user?.avatar" />
     </div>
-    <!-- 5. 接收文字 -->
-    <div class="msg msg-from" v-if="false">
-      <van-image src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg" />
+
+    <!-- 5. 接收文字：医生发的消息 -->
+    <div class="msg msg-from" v-if="msgType === MsgType.MsgText && store.user?.id !== from">
+      <van-image :src="fromAvatar" />
       <div class="content">
-        <div class="time">20:12</div>
-        <div class="pao">哪里不舒服</div>
+        <div class="time">{{ formatTime(createTime) }}</div>
+        <div class="pao">{{ msg.content }}</div>
       </div>
     </div>
     <!-- 6. 发送图片 -->

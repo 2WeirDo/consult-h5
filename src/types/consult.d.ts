@@ -136,3 +136,22 @@ export type ConsultOrderPreData = {
   couponId: number
   actualPayment: number // 实付
 }
+
+// 问诊订单详情类型
+export type ConsultOrderItem = Consult & {
+  id: string
+  createTime: string
+  docInfo?: Doctor
+  patientInfo: Patient
+  orderNo: string
+  statusValue: string
+  typeValue: string
+  status: OrderType
+  countdown: number
+  prescriptionId?: string
+  evaluateId: number
+  payment: number
+  couponDeduction: number
+  pointDeduction: number
+  actualPayment: number
+}

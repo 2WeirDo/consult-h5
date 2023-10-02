@@ -1,17 +1,30 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { OrderType } from '@/enums'
+const { status, countdown = 0 } = defineProps<{
+  status?: OrderType
+  countdown?: number
+}>()
+</script>
 
 <template>
   <div class="room-status">
-    <!-- 问诊状态 -->
     <!-- 1. 未接诊 -->
-    <div class="wait">已通知医生尽快接诊，24小时内医生未回复将自动退款</div>
+    <div class="wait" v-if="status === OrderType.ConsultWait">
+      已通知医生尽快接诊, 24小时内医生未回复将自动退款
+    </div>
     <!-- 2. 接诊：咨询中 -->
-    <!-- <div class="chat">
+    <div class="chat" v-if="status === OrderType.ConsultChat">
       <span>咨询中</span>
-      <span>剩余时间：23:10:34</span>
-    </div> -->
+      <!-- van-count-down中time传入的是毫秒 -->
+      <span>剩余时间：<van-count-down :time="countdown * 1000"></van-count-down></span>
+    </div>
     <!-- 3. 问诊结束 -->
-    <!-- <div class="end"><van-icon name="passed" /> 已结束</div> -->
+    <div
+      class="end"
+      v-if="status === OrderType.ConsultComplete || status === OrderType.ConsultCancel"
+    >
+      <van-icon name="passed" /> 已结束
+    </div>
   </div>
 </template>
 
