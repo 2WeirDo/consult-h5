@@ -33,6 +33,11 @@ const onLoad = async () => {
   // 关闭loading效果
   loading.value = false
 }
+
+// 根据传入订单id删除订单
+const onDelete = (id: string) => {
+  list.value = list.value.filter((item) => item.id !== id)
+}
 </script>
 
 <template>
@@ -43,7 +48,7 @@ const onLoad = async () => {
       finished-text="诶~没有更多了~~"
       @load="onLoad"
     >
-      <consult-item v-for="item in list" :key="item.id" :item="item" />
+      <consult-item v-for="item in list" :key="item.id" :item="item" @on-delete="onDelete" />
     </van-list>
   </div>
 </template>

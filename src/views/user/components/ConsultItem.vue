@@ -2,7 +2,10 @@
 import type { ConsultOrderItem } from '@/types/consult'
 import { OrderType } from '@/enums'
 import { computed, ref } from 'vue'
+import { cancelOrder, deleteOrder } from '@/api/consult'
+import { showFailToast, showSuccessToast, showConfirmDialog } from 'vant'
 
+const props = defineProps<{ item: ConsultOrderItem }>()
 // == 已完成订单使用 ==
 // 控制更多操作显示
 const showPopover = ref(false)
@@ -14,12 +17,82 @@ const actions = computed(() => [
   { text: '删除订单' }
 ])
 
-// 操作项的点击回调
-const onSelect = () => {
-  //
+// 下拉菜单操作项的点击回调(点击了'更多'选项栏中选项触发)
+const onSelect = (action: { text: string }, i: number) => {
+  // 第二个参数代表索引 : 我们定义的索引为1的选项text为删除订单, 因此当i为1时执行删除订单
+  if (i === 1) {
+    // 删除
+    deleteConsultOrder(props.item)
+  }
 }
 
-const props = defineProps<{ item: ConsultOrderItem }>()
+// 1. 点击取消问诊订单
+// 通过 loading 属性设置按钮为加载状态，加载状态下默认会隐藏按钮文字，
+// 可以通过 loading-text 设置加载状态下的文字。
+const loading = ref(false) // 防止重复点击
+const cancelConsultOrder = async (item: ConsultOrderItem) => {
+  loading.value = true
+  showConfirmDialog({
+    title: '温馨提示',
+    message: '确认取消问诊吗? 亲'
+  })
+    .then(async () => {
+      // 这里就近还是要加async
+      console.log('点了确定')
+      try {
+        // 1.后台数据库取消
+        await cancelOrder(item.id)
+
+        // 2.前端修改订单的状态(局部刷新下, 不需要重新刷新列表)
+        item.status = OrderType.ConsultCancel
+        item.statusValue = '已取消'
+        showSuccessToast('取消成功')
+      } catch (e) {
+        showFailToast('取消失败')
+      } finally {
+        // try/catch后不管成功还是失败都执行
+        loading.value = false
+      }
+    })
+    .catch(() => {
+      console.log('点了取消')
+      loading.value = false
+    })
+}
+
+// 2. 点击删除问诊订单
+// 注意 ❗ 我们是要删除订单, 要将父组件中的list列表根据id删除订单
+// 因此我们要子传父一个订单id, 父组件根据订单id进行filter删除
+const emit = defineEmits<{
+  (e: 'on-delete', id: string): void
+}>()
+const deleteLoading = ref(false) // 防止重复点击
+const deleteConsultOrder = (item: ConsultOrderItem) => {
+  deleteLoading.value = true
+  showConfirmDialog({
+    title: '温馨提示',
+    message: '确认删除订单吗? 亲'
+  })
+    .then(async () => {
+      console.log('点了确定')
+      try {
+        // 后台数据库取消
+        await deleteOrder(item.id)
+        // 通知父组件更新列表
+        emit('on-delete', item.id)
+        showSuccessToast('删除成功')
+      } catch (e) {
+        showFailToast('删除失败')
+      } finally {
+        // try/catch后不管成功还是失败都执行
+        deleteLoading.value = false
+      }
+    })
+    .catch(() => {
+      console.log('点了取消')
+      deleteLoading.value = false
+    })
+}
 </script>
 
 <template>
@@ -65,14 +138,30 @@ const props = defineProps<{ item: ConsultOrderItem }>()
     -->
     <!-- 1. 待支付：取消问诊+去支付 -->
     <div class="foot" v-if="item.status === OrderType.ConsultPay">
-      <van-button type="danger" plain size="small" round>取消问诊</van-button>
+      <van-button
+        type="danger"
+        plain
+        size="small"
+        round
+        :loading="loading"
+        @click="cancelConsultOrder(item)"
+        >取消问诊</van-button
+      >
       <van-button type="primary" plain size="small" round :to="`/user/consult/${item.id}`">
         去支付
       </van-button>
     </div>
     <!-- 2. 待接诊：取消问诊+继续沟通 -->
     <div class="foot" v-if="item.status === OrderType.ConsultWait">
-      <van-button type="danger" plain size="small" round>取消问诊</van-button>
+      <van-button
+        type="danger"
+        plain
+        size="small"
+        round
+        :loading="loading"
+        @click="cancelConsultOrder(item)"
+        >取消问诊</van-button
+      >
       <van-button type="primary" plain size="small" round :to="`/room?orderId=${item.id}`">
         继续沟通
       </van-button>
@@ -114,7 +203,15 @@ const props = defineProps<{ item: ConsultOrderItem }>()
     </div>
     <!-- 5. 已取消：删除订单+咨询其他医生 -->
     <div class="foot" v-if="item.status === OrderType.ConsultCancel">
-      <van-button type="danger" plain size="small" round>删除订单</van-button>
+      <van-button
+        type="danger"
+        plain
+        size="small"
+        round
+        :loading="deleteLoading"
+        @click="deleteConsultOrder(item)"
+        >删除订单</van-button
+      >
       <van-button type="primary" plain size="small" round to="/">咨询其他医生</van-button>
     </div>
   </div>

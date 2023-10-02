@@ -74,3 +74,9 @@ export const getPrescriptionPic = (id: string) =>
 // 获取问诊订单记录列表
 export const getConsultOrderList = (params: ConsultOrderListParams) =>
   request.get<any, ConsultOrderPage>('/patient/consult/order/list', { params })
+
+// 取消订单
+export const cancelOrder = (id: string) => request.put(`/patient/order/cancel/${id}`)
+
+// 删除订单
+export const deleteOrder = (id: string) => request.delete(`/patient/order/${id}`)
