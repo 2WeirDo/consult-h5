@@ -1,29 +1,44 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import type { ConsultOrderItem } from '@/types/consult'
+import { OrderType } from '@/enums'
+defineProps<{ item: ConsultOrderItem }>()
+</script>
 
 <template>
-  <div class="consult-item" v-for="i in 5" :key="i">
+  <div class="consult-item">
     <div class="head van-hairline--bottom">
       <img class="img" src="@/assets/avatar-doctor.svg" />
-      <p>极速问诊（自动分配医生）</p>
-      <span>待支付</span>
+      <p>{{ item.docInfo?.name || '暂未分配医生' }}</p>
+      <span
+        :class="{
+          orange: item.status === OrderType.ConsultPay,
+          green: item.status === OrderType.ConsultChat
+        }"
+        >{{ item.statusValue }}</span
+      >
     </div>
-    <div class="body">
+    <!-- 患者信息 -->
+    <div class="body" @click="$router.push(`/user/consult/${item.id}`)">
+      <div class="body-row">
+        <div class="body-label">患者</div>
+        <div class="body-value">{{ item.patientInfo.name }}</div>
+      </div>
       <div class="body-row">
         <div class="body-label">病情描述</div>
-        <div class="body-value">腹痛腹泻 胃部有些痉挛</div>
+        <div class="body-value">{{ item.illnessDesc }}</div>
       </div>
       <div class="body-row">
         <div class="body-label">价格</div>
-        <div class="body-value">¥ 39.00</div>
+        <div class="body-value">¥ {{ item.payment }}</div>
       </div>
       <div class="body-row">
         <div class="body-label">创建时间</div>
-        <div class="body-value tip">2019-07-08 09:55:54</div>
+        <div class="body-value tip">{{ item.createTime }}</div>
       </div>
     </div>
     <div class="foot">
-      <van-button class="gray" plain size="small" round>取消问诊</van-button>
-      <van-button type="primary" plain size="small" round>去支付</van-button>
+      <van-button class="gray" plain size="small" round>取消订单</van-button>
+      <van-button type="primary" plain size="small" round to="/">去支付</van-button>
     </div>
   </div>
 </template>

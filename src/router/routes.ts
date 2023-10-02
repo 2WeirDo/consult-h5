@@ -32,6 +32,11 @@ const routes = [
     meta: { title: '家庭档案' }
   },
   {
+    path: '/user/consult',
+    component: () => import('@/views/user/ConsultOrder.vue'),
+    meta: { title: '问诊记录' }
+  },
+  {
     path: '/login',
     component: () => import('@/views/login/index.vue'),
     meta: { title: '登录' }

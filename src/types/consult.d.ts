@@ -137,7 +137,7 @@ export type ConsultOrderPreData = {
   actualPayment: number // 实付
 }
 
-// 问诊订单详情类型
+// 问诊订单详情类型(单个)
 export type ConsultOrderItem = Consult & {
   id: string
   createTime: string
@@ -154,4 +154,20 @@ export type ConsultOrderItem = Consult & {
   couponDeduction: number
   pointDeduction: number
   actualPayment: number
+}
+
+// 6.问诊记录订单列表
+
+// 定义api参数类型
+export type ConsultOrderListParams = PageParams & {
+  // 添加一个问诊类型的字段 : 2为极速问诊
+  type: ConsultType
+}
+
+// 带分页问诊订单类型
+// api返回的data类型
+export type ConsultOrderPage = {
+  pageTotal: number
+  total: number
+  rows: ConsultOrderItem[]
 }

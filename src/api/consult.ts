@@ -11,7 +11,9 @@ import type {
   ConsultOrderPreData,
   ConsultOrderPreParams,
   PartialConsult,
-  ConsultOrderItem
+  ConsultOrderItem,
+  ConsultOrderListParams,
+  ConsultOrderPage
 } from '@/types/consult'
 
 import { request } from '@/utils/request'
@@ -68,3 +70,7 @@ export const evaluateConsultOrder = (data: {
 // 查看处方
 export const getPrescriptionPic = (id: string) =>
   request.get<any, { url: string }>(`/patient/consult/prescription/${id}`)
+
+// 获取问诊订单记录列表
+export const getConsultOrderList = (params: ConsultOrderListParams) =>
+  request.get<any, ConsultOrderPage>('/patient/consult/order/list', { params })
