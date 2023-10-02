@@ -36,6 +36,13 @@ const previewImg = (pictures?: Image[]) => {
 // 3.格式化时间
 const formatTime = (time: string) => dayjs(time).format('HH:mm')
 
+// 4.图片加载成功 => 执行滚动
+// 进而解决了图片消息滚动失败的问题
+const loadSuccess = () => {
+  // 等奥图片下载渲染完执行滚动
+  window.scrollTo(0, document.body.scrollHeight)
+}
+
 defineProps<{ list: Message[] }>()
 </script>
 
@@ -97,25 +104,21 @@ defineProps<{ list: Message[] }>()
       </div>
     </div>
     <!-- 6. 发送图片 -->
-    <div class="msg msg-to" v-if="false">
+    <div class="msg msg-to" v-if="msgType === MsgType.MsgImage && store.user?.id === from">
       <div class="content">
-        <div class="time">20:12</div>
-        <van-image
-          fit="contain"
-          src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg"
-        />
+        <div class="time">{{ formatTime(createTime) }}</div>
+        <!-- 在每次加载图片之后都将页面滚动到最底部 -->
+        <!-- 使用@load方法 -->
+        <van-image @load="loadSuccess()" fit="contain" :src="msg.picture?.url" />
       </div>
-      <van-image src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg" />
+      <van-image :src="store.user?.avatar" />
     </div>
     <!-- 7. 接收图片 -->
-    <div class="msg msg-from" v-if="false">
-      <van-image src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg" />
+    <div class="msg msg-from" v-if="msgType === MsgType.MsgImage && store.user?.id !== from">
+      <van-image :src="fromAvatar" />
       <div class="content">
-        <div class="time">20:12</div>
-        <van-image
-          fit="contain"
-          src="https://yjy-oss-files.oss-cn-zhangjiakou.aliyuncs.com/tuxian/popular_3.jpg"
-        />
+        <div class="time">{{ formatTime(createTime) }}</div>
+        <van-image @load="loadSuccess()" fit="contain" :src="msg.picture?.url" />
       </div>
     </div>
     <!-- 8. 处方消息 -->

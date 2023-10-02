@@ -7,7 +7,7 @@ import { useUserStore } from '@/stores'
 import { useRoute } from 'vue-router'
 import { io, type Socket } from 'socket.io-client'
 import { baseURL } from '@/utils/request'
-
+import type { Image } from '@/types/consult'
 import { MsgType, OrderType } from '@/enums'
 import type { Message, TimeMessages } from '@/types/room'
 import type { ConsultOrderItem } from '@/types/consult'
@@ -80,6 +80,7 @@ const initSocket = () => {
     await nextTick() // 列表有消息之后我们再进行滚动
     // 每次收到消息后, 滚动到最底部 => document.body.scrollHeight获取滚动高度
     window.scrollTo(0, document.body.scrollHeight) // 这是同步代码
+    // 解释: ❓ 关于加载完图片没有滚动的问题: 由于图片和文字不一样, 文字你请求后就能进行渲染, 但图片还需要下载, nextTick它不会等待你下载完再进行滚动
   })
 
   // 3.监听医生订单状态变更，更新订单状态（必须）
@@ -111,6 +112,16 @@ const sendText = (text: string) => {
   })
 }
 
+// 3.发送图片消息
+const sendImage = (img: Image) => {
+  socket.emit('sendChatMsg', {
+    from: store.user?.id,
+    to: consult.value?.docInfo?.id,
+    msgType: MsgType.MsgImage,
+    msg: { picture: img }
+  })
+}
+
 onMounted(() => {
   // 组件挂载建立连接
   initSocket()
@@ -132,7 +143,11 @@ onUnmounted(() => {
     <room-message :list="list" />
     <!-- 3. 底部操作栏：发消息 -->
     <!-- 医生未接诊，不是咨询中状态禁用消息输入框 -->
-    <room-action @send-text="sendText" :disabled="consult?.status !== OrderType.ConsultChat" />
+    <room-action
+      @send-text="sendText"
+      @send-image="sendImage"
+      :disabled="consult?.status !== OrderType.ConsultChat"
+    />
   </div>
 </template>
 <style lang="scss" scoped>
