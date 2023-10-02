@@ -9,7 +9,6 @@ import type { Image } from '@/types/consult'
 
 // 导入患病时间选项和是否就诊常量
 import { timeOptions, flagOptions } from '@/api/const'
-import { getPrescriptionPic } from '@/api/consult'
 
 import dayjs from 'dayjs'
 import { useRouter } from 'vue-router'
@@ -48,15 +47,8 @@ const loadSuccess = () => {
 }
 
 // 5.查看处方
-// 传入处方id
-const showPrescription = async (id?: string) => {
-  if (id) {
-    // if判断排除undefined情况, 限定类型
-    const res = await getPrescriptionPic(id)
-    // 这个方法是传入一个数组
-    showImagePreview([res.url])
-  }
-}
+import { useShowPrescription } from '@/hooks'
+const { showPrescription } = useShowPrescription()
 
 // 6.点击购买处方中的药品
 // 点击处方的跳转
@@ -156,6 +148,7 @@ defineProps<{ list: Message[] }>()
         <div class="head van-hairline--bottom">
           <div class="head-tit">
             <h3>电子处方</h3>
+            <!-- 传入处方id -->
             <p @click="showPrescription(msg.prescription?.id)">
               原始处方 <van-icon name="arrow"></van-icon>
             </p>

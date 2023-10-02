@@ -1,9 +1,12 @@
 // 放置全局可复用的钩子函数
 
-// 关注逻辑复用
 import { followDoctor } from '@/api/consult'
 import { ref } from 'vue'
 import type { FollowType } from '@/types/consult'
+import { getPrescriptionPic } from '@/api/consult'
+import { showImagePreview } from 'vant'
+
+// 关注医生或文章逻辑
 const useFollow = (type: FollowType = 'doc') => {
   // 关注逻辑
   const loading = ref(false)
@@ -24,4 +27,15 @@ const useFollow = (type: FollowType = 'doc') => {
   return { loading, follow }
 }
 
-export { useFollow }
+// 查看处方
+const useShowPrescription = () => {
+  const showPrescription = async (id?: string) => {
+    if (id) {
+      const res = await getPrescriptionPic(id)
+      showImagePreview([res.url])
+    }
+  }
+  return { showPrescription }
+}
+
+export { useFollow, useShowPrescription }

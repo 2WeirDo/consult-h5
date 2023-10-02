@@ -21,8 +21,11 @@ const actions = computed(() => [
 const onSelect = (action: { text: string }, i: number) => {
   // 第二个参数代表索引 : 我们定义的索引为1的选项text为删除订单, 因此当i为1时执行删除订单
   if (i === 1) {
-    // 删除
+    // 删除订单
     deleteConsultOrder(props.item)
+  } else if (i === 0) {
+    // 查看处方
+    showPrescription(props.item.prescriptionId)
   }
 }
 
@@ -93,6 +96,10 @@ const deleteConsultOrder = (item: ConsultOrderItem) => {
       deleteLoading.value = false
     })
 }
+
+// 3.查看处方
+import { useShowPrescription } from '@/hooks'
+const { showPrescription } = useShowPrescription()
 </script>
 
 <template>
@@ -168,7 +175,14 @@ const deleteConsultOrder = (item: ConsultOrderItem) => {
     </div>
     <!-- 3. 咨询中：查看处方（如果开了）+继续沟通 -->
     <div class="foot" v-if="item.status === OrderType.ConsultChat">
-      <van-button v-if="item.prescriptionId" type="primary" plain size="small" round>
+      <van-button
+        v-if="item.prescriptionId"
+        type="primary"
+        plain
+        @click="showPrescription(item.prescriptionId)"
+        size="small"
+        round
+      >
         查看处方
       </van-button>
       <van-button type="primary" plain size="small" round :to="`/room?orderId=${item.id}`">
