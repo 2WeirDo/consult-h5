@@ -66,6 +66,11 @@ const routes = [
     component: () => import('@/views/room/index.vue'),
     meta: { title: '问诊室' }
   },
+  {
+    path: '/user/consult/:id',
+    component: () => import('@/views/user/ConsultDetail.vue'),
+    meta: { title: '问诊详情' }
+  },
   // 测试页面
   {
     path: '/test',
