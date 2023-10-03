@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import KnowledgeCard from './KnowledgeCard.vue'
 import { getKnowledgePage } from '@/api/consult'
 import type { KnowledgeType, KnowledgeList, KnowledgeParams } from '@/types/consult'
@@ -36,6 +36,7 @@ const onLoad = async () => {
   // 加载完成, 关闭loading
   loading.value = false
 }
+onMounted(() => onLoad())
 </script>
 
 <template>
