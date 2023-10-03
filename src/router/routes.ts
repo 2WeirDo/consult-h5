@@ -71,6 +71,16 @@ const routes = [
     component: () => import('@/views/user/ConsultDetail.vue'),
     meta: { title: '问诊详情' }
   },
+  {
+    path: '/medicine/pay',
+    component: () => import('@/views/medicine/OrderPay.vue'),
+    meta: { title: '药品支付' }
+  },
+  {
+    path: '/medicine/pay/result',
+    component: () => import('@/views/medicine/OrderPayResult.vue'),
+    meta: { title: '药品支付结果' }
+  },
   // 测试页面
   {
     path: '/test',

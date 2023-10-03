@@ -170,7 +170,7 @@ defineProps<{ list: Message[] }>()
             <div class="num">x{{ med.quantity }}</div>
           </div>
         </div>
-        <div class="foot"><span @click="buy(msg.prescription)">购买药品</span></div>
+        <div class="foot" @click="buy(msg.prescription)"><span>购买药品</span></div>
       </div>
     </div>
     <!-- 9. 订单取消/关闭诊室 -->

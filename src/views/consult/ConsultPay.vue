@@ -91,8 +91,6 @@ const onClose = async () => {
     return true // 返回值没啥用
   }
 }
-
-// 跳转支付
 </script>
 
 <template>

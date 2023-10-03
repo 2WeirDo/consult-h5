@@ -31,7 +31,7 @@
           </p>
           <p class="price">￥25.00</p>
         </div>
-        <div class="desc">用法用量：口服，每次1袋，每天3次，用药3天</div>
+        <div class="desc">用法用量: 口服, 每次1袋, 每天3次, 用药3天</div>
       </div>
     </div>
     <div class="order-detail">

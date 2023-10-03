@@ -4,11 +4,14 @@ import { showLoadingToast, showToast } from 'vant'
 import { ref } from 'vue'
 
 // 接收props api
-const { orderId } = defineProps<{
+// 我们已经在vite.config.ts中进行过从父组件解构时保持响应式的配置了 reactivityTransform: true
+// (因为orderId是异步数据, 解构默认会失去响应式)
+const { orderId, payCallback } = defineProps<{
   show: boolean // 控制支付弹层
   orderId: string // 订单id
   payment?: number // 多少钱
   onClose?: () => Promise<boolean> //支付窗口关闭控制
+  payCallback?: string // 支付回跳地址, 因为药品支付成功后就不跳转到问诊室, 所以我们可以自己传入回跳地址
 }>()
 
 const emit = defineEmits<{
@@ -26,7 +29,7 @@ const pay = async () => {
     orderId: orderId,
     paymentMethod: paymentMethod.value,
     // 支付成功后会自动回调到payCallback这个地址
-    payCallback: 'http://localhost:5173/room'
+    payCallback: payCallback || 'http://localhost:5173/room'
   })
   console.log(res)
   // 跳转到支付宝平台进行支付
