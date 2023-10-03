@@ -81,10 +81,10 @@ const routes = [
     component: () => import('@/views/medicine/OrderPayResult.vue'),
     meta: { title: '药品支付结果' }
   },
-  // 测试页面
   {
-    path: '/test',
-    component: () => import('@/views/test/index.vue')
+    path: '/medicine/:id',
+    component: () => import('@/views/medicine/OrderDetail.vue'),
+    meta: { title: '药品订单详情' }
   }
 ]
 

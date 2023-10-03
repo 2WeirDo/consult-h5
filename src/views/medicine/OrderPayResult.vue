@@ -1,15 +1,10 @@
 <script setup lang="ts">
-import { getMedicalOrderDetail } from '@/api/medicine'
-import type { OrderDetail } from '@/types/medicine'
-import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import { useOrderDetail } from '@/hooks'
 
 const route = useRoute()
-const order = ref<OrderDetail>()
-onMounted(async () => {
-  const res = await getMedicalOrderDetail(route.query.orderId as string)
-  order.value = res
-})
+// 从hook钩子中获取订单详情信息
+const { order } = useOrderDetail(route.query.orderId as string)
 </script>
 
 <template>

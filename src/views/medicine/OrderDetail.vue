@@ -1,13 +1,22 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useRoute } from 'vue-router'
+import { useOrderDetail } from '@/hooks'
+
+const route = useRoute()
+// 从hook钩子中获取订单详情信息
+// 注意: 这个时候不是问号参数了, 这是直接放在url上, 动态路由参数,(就是vue router中设置的:id参数)
+// 通过route.params拿到动态路由参数
+const { order } = useOrderDetail(route.params.id as string)
+</script>
 
 <template>
-  <div class="order-detail-page">
+  <div class="order-detail-page" v-if="order">
     <cp-nav-bar title="药品订单详情" />
     <div class="order-head">
-      <div class="card">
+      <div class="card" @click="$router.push(`/medicine/express/${order?.id}`)">
         <div class="logistics">
-          <p>【东莞市】您的包裹已由物流公司揽收</p>
-          <p>2019-07-14 17:42:12</p>
+          <p>{{ order.expressInfo?.content || '已通知快递取件' }}</p>
+          <p>{{ order.expressInfo?.time || '--' }}</p>
         </div>
         <van-icon name="arrow" />
       </div>
@@ -18,32 +27,32 @@
         <h3>优医药房</h3>
         <small>优医质保 假一赔十</small>
       </div>
-      <div class="item van-hairline--top" v-for="i in 2" :key="i">
-        <img class="img" src="@/assets/ad.png" alt="" />
+      <div class="item van-hairline--top" v-for="med in order.medicines" :key="med.id">
+        <img class="img" :src="med.avatar" alt="" />
         <div class="info">
           <p class="name">
-            <span>优赛明 维生素E乳</span>
-            <span>x1</span>
+            <span>{{ med.name }}</span>
+            <span>x{{ med.quantity }}</span>
           </p>
           <p class="size">
-            <van-tag>处方药</van-tag>
-            <span>80ml</span>
+            <van-tag v-if="med.prescriptionFlag === 1">处方药</van-tag>
+            <span>{{ med.specs }}</span>
           </p>
-          <p class="price">￥25.00</p>
+          <p class="price">￥{{ med.amount }}</p>
         </div>
-        <div class="desc">用法用量: 口服, 每次1袋, 每天3次, 用药3天</div>
+        <div class="desc" v-if="med.usageDosag">{{ med.usageDosag }}</div>
       </div>
     </div>
     <div class="order-detail">
       <van-cell-group>
-        <van-cell title="药品金额" value="￥50" />
-        <van-cell title="运费" value="￥4" />
-        <van-cell title="优惠券" value="-￥0" />
-        <van-cell title="实付款" value="￥54" class="price" />
-        <van-cell title="订单编号" value="202201127465" />
-        <van-cell title="创建时间" value="2022-01-23 09:23:46" />
-        <van-cell title="支付时间" value="2022-01-23 09:23:46" />
-        <van-cell title="支付方式" value="支付宝支付" />
+        <van-cell title="药品金额" :value="`￥${order.payment}`" />
+        <van-cell title="运费" :value="`￥${order.expressFee}`" />
+        <van-cell title="优惠券" :value="`-￥${order.couponDeduction}`" />
+        <van-cell title="实付款" :value="`￥${order.actualPayment}`" class="price" />
+        <van-cell title="订单编号" :value="order.orderNo" />
+        <van-cell title="创建时间" :value="order.createTime" />
+        <van-cell title="支付时间" :value="order.payTime" />
+        <van-cell title="支付方式" :value="order.paymentMethod === 0 ? '微信' : '支付宝'" />
       </van-cell-group>
     </div>
     <van-action-bar>

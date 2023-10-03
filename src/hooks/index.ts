@@ -1,14 +1,16 @@
 // 放置全局可复用的钩子函数
 
 import { followDoctor } from '@/api/consult'
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import type { FollowType } from '@/types/consult'
 import { getPrescriptionPic } from '@/api/consult'
 import { showImagePreview } from 'vant'
 import { useClipboard } from '@vueuse/core' // 使用vueuse
 import { showSuccessToast, showFailToast } from 'vant'
+import { getMedicalOrderDetail } from '@/api/medicine'
+import type { OrderDetail } from '@/types/medicine'
 
-// 关注医生或文章逻辑
+// 1. 关注医生或文章逻辑
 const useFollow = (type: FollowType = 'doc') => {
   // 关注逻辑
   const loading = ref(false)
@@ -29,7 +31,7 @@ const useFollow = (type: FollowType = 'doc') => {
   return { loading, follow }
 }
 
-// 查看处方
+// 2. 查看处方
 const useShowPrescription = () => {
   const showPrescription = async (id?: string) => {
     if (id) {
@@ -40,7 +42,7 @@ const useShowPrescription = () => {
   return { showPrescription }
 }
 
-// 复制文本
+// 3. 复制文本
 const useCopy = () => {
   const { copy, copied, isSupported } = useClipboard()
 
@@ -58,4 +60,20 @@ const useCopy = () => {
   return { onCopy }
 }
 
-export { useFollow, useShowPrescription, useCopy }
+// 4. 获取药品订单详情数据
+const useOrderDetail = (id: string) => {
+  const loading = ref(false)
+  const order = ref<OrderDetail>()
+  onMounted(async () => {
+    loading.value = true
+    try {
+      const res = await getMedicalOrderDetail(id)
+      order.value = res
+    } finally {
+      loading.value = false
+    }
+  })
+  return { order, loading }
+}
+
+export { useFollow, useShowPrescription, useCopy, useOrderDetail }
