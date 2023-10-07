@@ -3,6 +3,10 @@ import { getMedicalOrderLogistics } from '@/api/medicine'
 import type { Express } from '@/types/medicine'
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import AMapLoader from '@amap/amap-jsapi-loader'
+import carImg from '@/assets/car.png'
+import startImg from '@/assets/start.png'
+import endImg from '@/assets/end.png'
 
 // 获取物流信息
 const express = ref<Express>()
@@ -10,7 +14,82 @@ const route = useRoute()
 onMounted(async () => {
   const res = await getMedicalOrderLogistics(route.params.id as string)
   express.value = res
+
+  const AMap = await AMapLoader.load({
+    key: 'ef947696f75e2cc14a33d742f498eded',
+    version: '2.0'
+  })
+  // 使用 Amap 初始化地图
+  const map = new AMap.Map('map', {
+    //设置地图容器id
+    zoom: 12, //初始化地图级别, 值越大范围越大
+    mapStyle: 'amap://styles/macaron' // 设置地图样式
+  })
+  // 绘制物流轨迹
+  // 必须通过插件导入
+  AMap.plugin('AMap.Driving', () => {
+    var driving = new AMap.Driving({
+      map: map, // 指定轨迹显示地图实例
+      showTraffic: false, // 关闭交通状态
+      hideMarkers: true
+    })
+
+    // == 替换真实物流坐标数据 ==
+    // 第一个是起始坐标，第二个是终点坐标， 第三个是路途中的经纬度坐标， 第四个规划好了的回调函数
+    // 1. 使用经纬度数组中的第一个数据：起始坐标
+    const start = express.value?.logisticsInfo.shift()
+    // 2. 使用经纬度数组中的最后一个数据：结束坐标
+    const end = express.value?.logisticsInfo.pop()
+    // 3. 途径点坐标：express.value?.logisticsInfo shift和pop后剩余未途经点坐标，处理成二维数据
+    const road = express.value?.logisticsInfo.map((item) => [item.longitude, item.latitude])
+
+    // 四个参数
+    driving.search(
+      [start?.longitude, start?.latitude],
+      [end?.longitude, end?.latitude],
+      {
+        waypoints: road // 显示途经点坐标(二维数组)
+      },
+      function (status: string, result: object) {
+        // 未出错时，result即是对应的路线规划方案
+        // 绘制运输中货车的当前位置
+        console.log(status, result)
+        const carMarker = new AMap.Marker({
+          icon: carImg, // 火车的图片
+          position: [
+            express.value?.currentLocationInfo.longitude,
+            express.value?.currentLocationInfo.latitude
+          ],
+          anchor: 'center' // 设置基于坐标点显示的位置
+        })
+        map.add(carMarker)
+
+        // 3s后，定位到货车，放大地图
+        setTimeout(() => {
+          map.setFitView([carMarker])
+          map.setZoom(10)
+        }, 3000)
+      }
+    )
+    // 自定义开始结束位置图片
+    const startMarker = new AMap.Marker({
+      icon: startImg, // 设置自定义图片
+      position: [start?.longitude, start?.latitude] // 图片显示的坐标位置
+    })
+    map.add(startMarker)
+    const endMarker = new AMap.Marker({
+      icon: endImg,
+      position: [end?.longitude, end?.latitude]
+    })
+    map.add(endMarker)
+  })
 })
+
+// 绘制高德地图物流轨迹
+// 校验密钥
+window._AMapSecurityConfig = {
+  securityJsCode: '49c6f416f39a1034e21c2f647916be41'
+}
 </script>
 
 <template>
