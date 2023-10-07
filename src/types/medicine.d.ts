@@ -53,3 +53,28 @@ export type OrderDetail = {
   actualPayment: number
   roomId: string
 }
+
+// 物流日志item
+export type Log = {
+  id: string
+  content: string
+  createTime: string
+  status: number // 订单派送状态：1已发货 2已揽件 3 运输中 4 派送中 5已签收
+  statusValue: string
+}
+// 经纬度
+export type Location = {
+  longitude: string
+  latitude: string
+}
+// data数据
+export type Express = {
+  estimatedTime: string
+  name: string
+  awbNo: string
+  status: ExpressStatus
+  statusValue: string
+  list: Log[]
+  logisticsInfo: Location[]
+  currentLocationInfo: Location
+}

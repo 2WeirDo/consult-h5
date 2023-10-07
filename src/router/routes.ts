@@ -85,6 +85,11 @@ const routes = [
     path: '/medicine/:id',
     component: () => import('@/views/medicine/OrderDetail.vue'),
     meta: { title: '药品订单详情' }
+  },
+  {
+    path: '/medicine/express/:id',
+    component: () => import('@/views/medicine/OrderExpress.vue'),
+    meta: { title: '物流详情' }
   }
 ]
 

@@ -1,38 +1,43 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { getMedicalOrderLogistics } from '@/api/medicine'
+import type { Express } from '@/types/medicine'
+import { onMounted, ref } from 'vue'
+import { useRoute } from 'vue-router'
+
+// 获取物流信息
+const express = ref<Express>()
+const route = useRoute()
+onMounted(async () => {
+  const res = await getMedicalOrderLogistics(route.params.id as string)
+  express.value = res
+})
+</script>
 
 <template>
   <div class="order-logistics-page">
+    <!-- 高德地图挂载渲染 -->
     <div id="map">
       <div class="title">
         <van-icon name="arrow-left" @click="$router.back()" />
-        <span>配送中</span>
+        <span>{{ express?.statusValue }}</span>
         <van-icon name="service" />
       </div>
       <div class="current">
-        <p class="status">订单派送中 预计明天送达</p>
+        <p class="status">{{ express?.statusValue }}——预计{{ express?.estimatedTime }}送达</p>
         <p class="predict">
-          <span>申通快递</span>
-          <span>7511266366963366</span>
+          <span>{{ express?.name }}</span>
+          <span>{{ express?.awbNo }}</span>
         </p>
       </div>
     </div>
+    <!-- 物流详情 -->
     <div class="logistics">
       <p class="title">物流详情</p>
       <van-steps direction="vertical" :active="0">
-        <van-step>
-          <p class="status">派送中</p>
-          <p class="content">您的订单正在派送中【深圳市】科技园派送员宋平正在为您派件</p>
-          <p class="time">今天天 17:25</p>
-        </van-step>
-        <van-step v-for="i in 5" :key="i">
-          <p class="status">运输中</p>
-          <p class="content">在广东深圳公司进行发出扫描</p>
-          <p class="time">昨天 10:25</p>
-        </van-step>
-        <van-step>
-          <p class="status">已发货</p>
-          <p class="content">卖家已发货</p>
-          <p class="time">2022-08-20 10:25</p>
+        <van-step v-for="item in express?.list" :key="item.id">
+          <p class="status" v-if="item.statusValue">{{ item.statusValue }}</p>
+          <p class="content">{{ item.content }}</p>
+          <p class="time">{{ item.createTime }}</p>
         </van-step>
       </van-steps>
     </div>
