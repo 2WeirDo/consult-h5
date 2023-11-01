@@ -13,6 +13,7 @@ import path from 'path'
 
 export default defineConfig({
   // base: '/服务器中放置打包代码的目录名'
+  base: '/consult/',
   plugins: [
     vue({
       reactivityTransform: true // 允许对父传子props解构时保留响应式

@@ -85,7 +85,7 @@ onMounted(async () => {
   })
 })
 
-// 绘制高德地图物流轨迹
+// 绘制高德地图物流轨迹  pnpm i @amap/amap-jsapi-loader
 // 校验密钥
 window._AMapSecurityConfig = {
   securityJsCode: '49c6f416f39a1034e21c2f647916be41'
