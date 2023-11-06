@@ -15,18 +15,18 @@
           <cp-icon :name="`home-index-${active ? 'active' : 'default'}`" />
         </template>
       </van-tabbar-item>
-      <van-tabbar-item to="/article">
+      <!-- <van-tabbar-item to="/article">
         健康百科
         <template #icon="{ active }">
           <cp-icon :name="`home-article-${active ? 'active' : 'default'}`" />
         </template>
-      </van-tabbar-item>
-      <van-tabbar-item to="/notify">
+      </van-tabbar-item> -->
+      <!-- <van-tabbar-item to="/notify">
         消息中心
         <template #icon="{ active }">
           <cp-icon :name="`home-notice-${active ? 'active' : 'default'}`" />
         </template>
-      </van-tabbar-item>
+      </van-tabbar-item> -->
       <van-tabbar-item to="/user">
         我的
         <template #icon="{ active }">

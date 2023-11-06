@@ -11,8 +11,8 @@ import { ConsultType } from '@/enums'
     <van-tabs sticky>
       <!-- 开发极速问诊 type = 2 -->
       <van-tab title="极速问诊"><consult-list :type="ConsultType.Fast" /></van-tab>
-      <van-tab title="找医生"><consult-list :type="ConsultType.Doctor" /></van-tab>
-      <van-tab title="开药问诊"><consult-list :type="ConsultType.Medication" /></van-tab>
+      <!-- <van-tab title="找医生"><consult-list :type="ConsultType.Doctor" /></van-tab>
+      <van-tab title="开药问诊"><consult-list :type="ConsultType.Medication" /></van-tab> -->
     </van-tabs>
   </div>
 </template>

@@ -29,7 +29,9 @@ const pay = async () => {
     orderId: orderId,
     paymentMethod: paymentMethod.value,
     // 支付成功后会自动回调到payCallback这个地址
-    payCallback: payCallback || 'http://localhost:5173/room'
+
+    // todo
+    payCallback: payCallback || 'http://localhost:5173/consult/room'
   })
   console.log(res)
   // 跳转到支付宝平台进行支付

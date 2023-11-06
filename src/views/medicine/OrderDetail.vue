@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { useOrderDetail } from '@/hooks'
+import router from '@/router';
 
 const route = useRoute()
 // 从hook钩子中获取订单详情信息
@@ -13,7 +14,7 @@ const { order } = useOrderDetail(route.params.id as string)
   <div class="order-detail-page" v-if="order">
     <cp-nav-bar title="药品订单详情" />
     <div class="order-head">
-      <div class="card" @click="$router.push(`/medicine/express/${order?.id}`)">
+      <div class="card" @click="router.push(`/medicine/express/${order?.id}`)">
         <div class="logistics">
           <p>{{ order.expressInfo?.content || '已通知快递取件' }}</p>
           <p>{{ order.expressInfo?.time || '--' }}</p>
@@ -56,7 +57,7 @@ const { order } = useOrderDetail(route.params.id as string)
       </van-cell-group>
     </div>
     <van-action-bar>
-      <van-action-bar-button type="primary" text="确认收货" />
+      <van-action-bar-button type="primary" text="确认收货" @click="router.push('/')" />
     </van-action-bar>
   </div>
 </template>

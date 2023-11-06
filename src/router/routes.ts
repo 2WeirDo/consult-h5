@@ -13,11 +13,11 @@ const routes = [
         // 路由元信息作用 => 给路由添加数据
         meta: { title: '健康百科' }
       },
-      {
-        path: '/notify',
-        component: () => import('@/views/notify/index.vue'),
-        meta: { title: '消息通知' }
-      },
+      // {
+      //   path: '/notify',
+      //   component: () => import('@/views/notify/index.vue'),
+      //   meta: { title: '消息通知' }
+      // },
       {
         path: '/user',
         component: () => import('@/views/user/index.vue'),
@@ -30,6 +30,11 @@ const routes = [
     path: '/user/patient',
     component: () => import('@/views/user/PatientInfo.vue'),
     meta: { title: '家庭档案' }
+  },
+  {
+    path: '/user/address',
+    component: () => import('@/views/user/Patientaddress.vue'),
+    meta: { title: '地址管理' }
   },
   {
     path: '/user/consult',

@@ -121,11 +121,12 @@ const submit = async () => {
       text-align="left"
     ></van-submit-bar>
 
+    <!-- todo -->
     <!-- 支付弹层 -->
     <cp-pay-sheet
       :orderId="orderId"
       :payment="orderPre?.actualPayment"
-      payCallback="http://localhost:5173/medicine/pay/result"
+      payCallback="http://localhost:5173/consult/medicine/pay/result"
       v-model:show="show"
     />
   </div>

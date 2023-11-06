@@ -13,12 +13,10 @@ onMounted(async () => {
 
 const tools = [
   { label: '我的问诊', path: '/user/consult' },
-  { label: '我的处方', path: '/' },
   { label: '家庭档案', path: '/user/patient' },
   { label: '地址管理', path: '/user/address' },
-  { label: '我的评价', path: '/' },
-  { label: '官方客服', path: '/' },
-  { label: '设置', path: '/' }
+  // { label: '官方客服', path: '/article' }
+  // { label: '设置', path: '/' }
 ]
 
 // 实现退出功能
@@ -72,8 +70,8 @@ const logout = async () => {
     </div>
     <div class="user-page-order">
       <div class="head">
-        <h3>药品订单</h3>
-        <router-link to="/order">全部订单 <van-icon name="arrow" /></router-link>
+        <h3>问诊订单</h3>
+        <router-link to="/user/consult">全部订单 <van-icon name="arrow" /></router-link>
       </div>
       <van-row v-if="user.orderInfo">
         <!-- 因为请求是异步的, 所以还要判断, 当然也可以加可选链 -->
